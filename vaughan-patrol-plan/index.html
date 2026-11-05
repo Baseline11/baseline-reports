@@ -224,6 +224,28 @@ select{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--ln);bo
   .crumb{display:none}
 }
 @media (prefers-reduced-motion:reduce){.pane{transition:none}}
+/* financial pages */
+.big{font-size:40px;font-weight:800;line-height:1.05;letter-spacing:-.02em;color:var(--cT)}
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px}
+@media (max-width:900px){.hero{grid-template-columns:1fr}}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}
+.vs .side2{background:var(--pg);border-radius:10px;padding:10px 12px;display:grid;gap:2px}
+.vs .side2 b{font-size:22px;font-weight:800}
+.vs .arr{color:var(--s);font-weight:800}
+.chart.sm{height:240px}
+.leg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;font-weight:600;color:var(--s)}
+.leg span{display:inline-flex;align-items:center;gap:6px}
+.kpi.hl{background:var(--cB);border-color:transparent}.kpi.hl .kv,.kpi.hl .kh{color:var(--cT)}.kpi.hl .kh .i{color:var(--cT)}
+.kpi.hl .kn{color:var(--cT)}
+ul.clean{margin:0;padding-left:18px;display:grid;gap:4px;max-width:80ch}
+.btn,.btn2{text-decoration:none}
+.qm{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1.5px solid var(--ic);color:var(--s);font-size:11px;font-weight:800;line-height:1;cursor:help;flex:none;user-select:none;-webkit-user-select:none}
+.qm:hover,.qm:focus-visible{border-color:var(--ac);color:var(--at);outline:none}
+h2 .qm,.kpi .kh .qm{margin-left:auto}
+.tip{max-width:340px;line-height:1.45;font-weight:600}
+.ph .brk{flex-basis:100%;height:0}
+.pgnav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
 .leaflet-image-layer,.leaflet-layer,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-pane,.leaflet-pane>canvas,.leaflet-pane>svg,.leaflet-tile,.leaflet-tile-container,.leaflet-zoom-box{position:absolute;left:0;top:0}.leaflet-container{overflow:hidden}.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-tile{-webkit-user-select:none;-moz-user-select:none;user-select:none;-webkit-user-drag:none}.leaflet-tile::selection{background:0 0}.leaflet-safari .leaflet-tile{image-rendering:-webkit-optimize-contrast}.leaflet-safari .leaflet-tile-container{width:1600px;height:1600px;-webkit-transform-origin:0 0}.leaflet-marker-icon,.leaflet-marker-shadow{display:block}.leaflet-container .leaflet-overlay-pane svg{max-width:none!important;max-height:none!important}.leaflet-container .leaflet-marker-pane img,.leaflet-container .leaflet-shadow-pane img,.leaflet-container .leaflet-tile,.leaflet-container .leaflet-tile-pane img,.leaflet-container img.leaflet-image-layer{max-width:none!important;max-height:none!important;width:auto;padding:0}.leaflet-container img.leaflet-tile{mix-blend-mode:plus-lighter}.leaflet-container.leaflet-touch-zoom{-ms-touch-action:pan-x pan-y;touch-action:pan-x pan-y}.leaflet-container.leaflet-touch-drag{-ms-touch-action:pinch-zoom;touch-action:none;touch-action:pinch-zoom}.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom{-ms-touch-action:none;touch-action:none}.leaflet-container{-webkit-tap-highlight-color:transparent}.leaflet-container a{-webkit-tap-highlight-color:rgba(51,181,229,.4)}.leaflet-tile{filter:inherit;visibility:hidden}.leaflet-tile-loaded{visibility:inherit}.leaflet-zoom-box{width:0;height:0;-moz-box-sizing:border-box;box-sizing:border-box;z-index:800}.leaflet-overlay-pane svg{-moz-user-select:none}.leaflet-pane{z-index:400}.leaflet-tile-pane{z-index:200}.leaflet-overlay-pane{z-index:400}.leaflet-shadow-pane{z-index:500}.leaflet-marker-pane{z-index:600}.leaflet-tooltip-pane{z-index:650}.leaflet-popup-pane{z-index:700}.leaflet-map-pane canvas{z-index:100}.leaflet-map-pane svg{z-index:200}.leaflet-vml-shape{width:1px;height:1px}.lvml{behavior:url(#default#VML);display:inline-block;position:absolute}.leaflet-control{position:relative;z-index:800;pointer-events:visiblePainted;pointer-events:auto}.leaflet-bottom,.leaflet-top{position:absolute;z-index:1000;pointer-events:none}.leaflet-top{top:0}.leaflet-right{right:0}.leaflet-bottom{bottom:0}.leaflet-left{left:0}.leaflet-control{float:left;clear:both}.leaflet-right .leaflet-control{float:right}.leaflet-top .leaflet-control{margin-top:10px}.leaflet-bottom .leaflet-control{margin-bottom:10px}.leaflet-left .leaflet-control{margin-left:10px}.leaflet-right .leaflet-control{margin-right:10px}.leaflet-fade-anim .leaflet-popup{opacity:0;-webkit-transition:opacity .2s linear;-moz-transition:opacity .2s linear;transition:opacity .2s linear}.leaflet-fade-anim .leaflet-map-pane .leaflet-popup{opacity:1}.leaflet-zoom-animated{-webkit-transform-origin:0 0;-ms-transform-origin:0 0;transform-origin:0 0}svg.leaflet-zoom-animated{will-change:transform}.leaflet-zoom-anim .leaflet-zoom-animated{-webkit-transition:-webkit-transform .25s cubic-bezier(0,0,.25,1);-moz-transition:-moz-transform .25s cubic-bezier(0,0,.25,1);transition:transform .25s cubic-bezier(0,0,.25,1)}.leaflet-pan-anim .leaflet-tile,.leaflet-zoom-anim .leaflet-tile{-webkit-transition:none;-moz-transition:none;transition:none}.leaflet-zoom-anim .leaflet-zoom-hide{visibility:hidden}.leaflet-interactive{cursor:pointer}.leaflet-grab{cursor:-webkit-grab;cursor:-moz-grab;cursor:grab}.leaflet-crosshair,.leaflet-crosshair .leaflet-interactive{cursor:crosshair}.leaflet-control,.leaflet-popup-pane{cursor:auto}.leaflet-dragging .leaflet-grab,.leaflet-dragging .leaflet-grab .leaflet-interactive,.leaflet-dragging .leaflet-marker-draggable{cursor:move;cursor:-webkit-grabbing;cursor:-moz-grabbing;cursor:grabbing}.leaflet-image-layer,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-pane>svg path,.leaflet-tile-container{pointer-events:none}.leaflet-image-layer.leaflet-interactive,.leaflet-marker-icon.leaflet-interactive,.leaflet-pane>svg path.leaflet-interactive,svg.leaflet-image-layer.leaflet-interactive path{pointer-events:visiblePainted;pointer-events:auto}.leaflet-container{background:#ddd;outline-offset:1px}.leaflet-container a{color:#0078a8}.leaflet-zoom-box{border:2px dotted #38f;background:rgba(255,255,255,.5)}.leaflet-container{font-family:"Helvetica Neue",Arial,Helvetica,sans-serif;font-size:12px;font-size:.75rem;line-height:1.5}.leaflet-bar{box-shadow:0 1px 5px rgba(0,0,0,.65);border-radius:4px}.leaflet-bar a{background-color:#fff;border-bottom:1px solid #ccc;width:26px;height:26px;line-height:26px;display:block;text-align:center;text-decoration:none;color:#000}.leaflet-bar a,.leaflet-control-layers-toggle{background-position:50% 50%;background-repeat:no-repeat;display:block}.leaflet-bar a:focus,.leaflet-bar a:hover{background-color:#f4f4f4}.leaflet-bar a:first-child{border-top-left-radius:4px;border-top-right-radius:4px}.leaflet-bar a:last-child{border-bottom-left-radius:4px;border-bottom-right-radius:4px;border-bottom:none}.leaflet-bar a.leaflet-disabled{cursor:default;background-color:#f4f4f4;color:#bbb}.leaflet-touch .leaflet-bar a{width:30px;height:30px;line-height:30px}.leaflet-touch .leaflet-bar a:first-child{border-top-left-radius:2px;border-top-right-radius:2px}.leaflet-touch .leaflet-bar a:last-child{border-bottom-left-radius:2px;border-bottom-right-radius:2px}.leaflet-control-zoom-in,.leaflet-control-zoom-out{font:bold 18px 'Lucida Console',Monaco,monospace;text-indent:1px}.leaflet-touch .leaflet-control-zoom-in,.leaflet-touch .leaflet-control-zoom-out{font-size:22px}.leaflet-control-layers{box-shadow:0 1px 5px rgba(0,0,0,.4);background:#fff;border-radius:5px}.leaflet-control-layers-toggle{background-image:url(images/layers.png);width:36px;height:36px}.leaflet-retina .leaflet-control-layers-toggle{background-image:url(images/layers-2x.png);background-size:26px 26px}.leaflet-touch .leaflet-control-layers-toggle{width:44px;height:44px}.leaflet-control-layers .leaflet-control-layers-list,.leaflet-control-layers-expanded .leaflet-control-layers-toggle{display:none}.leaflet-control-layers-expanded .leaflet-control-layers-list{display:block;position:relative}.leaflet-control-layers-expanded{padding:6px 10px 6px 6px;color:#333;background:#fff}.leaflet-control-layers-scrollbar{overflow-y:scroll;overflow-x:hidden;padding-right:5px}.leaflet-control-layers-selector{margin-top:2px;position:relative;top:1px}.leaflet-control-layers label{display:block;font-size:13px;font-size:1.08333em}.leaflet-control-layers-separator{height:0;border-top:1px solid #ddd;margin:5px -10px 5px -6px}.leaflet-default-icon-path{background-image:url(images/marker-icon.png)}.leaflet-container .leaflet-control-attribution{background:#fff;background:rgba(255,255,255,.8);margin:0}.leaflet-control-attribution,.leaflet-control-scale-line{padding:0 5px;color:#333;line-height:1.4}.leaflet-control-attribution a{text-decoration:none}.leaflet-control-attribution a:focus,.leaflet-control-attribution a:hover{text-decoration:underline}.leaflet-attribution-flag{display:inline!important;vertical-align:baseline!important;width:1em;height:.6669em}.leaflet-left .leaflet-control-scale{margin-left:5px}.leaflet-bottom .leaflet-control-scale{margin-bottom:5px}.leaflet-control-scale-line{border:2px solid #777;border-top:none;line-height:1.1;padding:2px 5px 1px;white-space:nowrap;-moz-box-sizing:border-box;box-sizing:border-box;background:rgba(255,255,255,.8);text-shadow:1px 1px #fff}.leaflet-control-scale-line:not(:first-child){border-top:2px solid #777;border-bottom:none;margin-top:-2px}.leaflet-control-scale-line:not(:first-child):not(:last-child){border-bottom:2px solid #777}.leaflet-touch .leaflet-bar,.leaflet-touch .leaflet-control-attribution,.leaflet-touch .leaflet-control-layers{box-shadow:none}.leaflet-touch .leaflet-bar,.leaflet-touch .leaflet-control-layers{border:2px solid rgba(0,0,0,.2);background-clip:padding-box}.leaflet-popup{position:absolute;text-align:center;margin-bottom:20px}.leaflet-popup-content-wrapper{padding:1px;text-align:left;border-radius:12px}.leaflet-popup-content{margin:13px 24px 13px 20px;line-height:1.3;font-size:13px;font-size:1.08333em;min-height:1px}.leaflet-popup-content p{margin:17px 0;margin:1.3em 0}.leaflet-popup-tip-container{width:40px;height:20px;position:absolute;left:50%;margin-top:-1px;margin-left:-20px;overflow:hidden;pointer-events:none}.leaflet-popup-tip{width:17px;height:17px;padding:1px;margin:-10px auto 0;pointer-events:auto;-webkit-transform:rotate(45deg);-moz-transform:rotate(45deg);-ms-transform:rotate(45deg);transform:rotate(45deg)}.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#fff;color:#333;box-shadow:0 3px 14px rgba(0,0,0,.4)}.leaflet-container a.leaflet-popup-close-button{position:absolute;top:0;right:0;border:none;text-align:center;width:24px;height:24px;font:16px/24px Tahoma,Verdana,sans-serif;color:#757575;text-decoration:none;background:0 0}.leaflet-container a.leaflet-popup-close-button:focus,.leaflet-container a.leaflet-popup-close-button:hover{color:#585858}.leaflet-popup-scrolled{overflow:auto}.leaflet-oldie .leaflet-popup-content-wrapper{-ms-zoom:1}.leaflet-oldie .leaflet-popup-tip{width:24px;margin:0 auto}.leaflet-oldie .leaflet-control-layers,.leaflet-oldie .leaflet-control-zoom,.leaflet-oldie .leaflet-popup-content-wrapper,.leaflet-oldie .leaflet-popup-tip{border:1px solid #999}.leaflet-div-icon{background:#fff;border:1px solid #666}.leaflet-tooltip{position:absolute;padding:6px;background-color:#fff;border:1px solid #fff;border-radius:3px;color:#222;white-space:nowrap;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.4)}.leaflet-tooltip.leaflet-interactive{cursor:pointer;pointer-events:auto}.leaflet-tooltip-bottom:before,.leaflet-tooltip-left:before,.leaflet-tooltip-right:before,.leaflet-tooltip-top:before{position:absolute;pointer-events:none;border:6px solid transparent;background:0 0;content:""}.leaflet-tooltip-bottom{margin-top:6px}.leaflet-tooltip-top{margin-top:-6px}.leaflet-tooltip-bottom:before,.leaflet-tooltip-top:before{left:50%;margin-left:-6px}.leaflet-tooltip-top:before{bottom:0;margin-bottom:-12px;border-top-color:#fff}.leaflet-tooltip-bottom:before{top:0;margin-top:-12px;margin-left:-6px;border-bottom-color:#fff}.leaflet-tooltip-left{margin-left:-6px}.leaflet-tooltip-right{margin-left:6px}.leaflet-tooltip-left:before,.leaflet-tooltip-right:before{top:50%;margin-top:-6px}.leaflet-tooltip-left:before{right:0;margin-right:-12px;border-left-color:#fff}.leaflet-tooltip-right:before{left:0;margin-left:-12px;border-right-color:#fff}@media print{.leaflet-control{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 </style>
 
@@ -391,6 +413,80 @@ select{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--ln);bo
   <div class="card flat"><div style="padding:16px 16px 0;display:grid;gap:4px"><h2><span class="i acc" data-i="nav-calendar"></span>Month by route</h2><p class="small mut">A coloured cell is the day the route is patrolled. Click it to see that shift.</p></div><div class="gantt" id="gRoute"></div></div>
 </section>
 
+<section class="page" data-page="summary" hidden>
+  <div class="ph"><span class="i lg acc" data-i="nav-report"></span><h1>The road patrol plan pays for Category A in about two months</h1><span class="brk"></span>
+    <p class="sub">Vaughan runs six patrollers a day, two per shift, three shifts, every day of the year. Today each spends about two-thirds of the shift patrolling. With class-based routes in Citycare, the same MMS coverage takes about one hour per patroller per shift.</p></div>
+  <div class="ctl"><span class="chip blue"><span class="i sm acc" data-i="entity-building"></span>Prepared by Baseline for Vaughan Public Works</span><span class="chip grey"><span class="i sm" data-i="nav-calendar"></span>November 2026</span><span class="chip green"><span class="i sm" data-i="action-check-circle"></span>Full O. Reg. 239/02 coverage, no late patrols</span><span class="chip amber"><span class="i sm" data-i="support-info"></span>Planning estimate, see assumptions</span></div>
+  <div class="kpis" id="kpiSum"></div>
+  <div class="hero">
+    <div class="card"><h2><span class="i acc" data-i="accent-timeline"></span>Five-year cumulative value against the Category A contract<span class="qm" tabindex="0" role="button" aria-label="How this is calculated" data-q="payChart">?</span></h2>
+      <div class="chart"><canvas id="chPay"></canvas></div>
+      <p class="small mut" id="payNote"></p></div>
+    <div class="card"><h2><span class="i acc" data-i="support-ideas"></span>What changes, and why it pays<span class="qm" tabindex="0" role="button" aria-label="How this is calculated" data-q="vs">?</span></h2>
+      <p>Today’s patrol areas mix every road class and take five to six hours each, so every patroller spends most of the shift driving, and busy arterials get no more attention than quiet crescents.</p>
+      <p>The new plan builds routes per MMS class, each under three hours from 2800 Rutherford Rd, repeated on that class’s legal schedule. Roads driven on the way to a route count as patrolled. The whole city is covered with about 5.2 hours of driving a day, plus route prep.</p>
+      <div class="vs"><div class="side2"><span class="xs mut">Patrol share of each shift, today</span><b id="vsB"></b></div><span class="arr">to</span><div class="side2"><span class="xs mut">With the new routes</span><b id="vsA" style="color:var(--cT)"></b></div></div>
+      <p class="small mut">The freed time stays with Roads: potholes, signs, debris, sweeping, or less overtime and contractor spend.</p>
+    </div>
+  </div>
+  <div class="card"><h2><span class="i acc" data-i="nav-table"></span>In this analysis</h2><div class="g4" id="ftoc"></div></div>
+</section>
+
+<section class="page" data-page="time" hidden>
+  <div class="ph"><span class="i lg acc" data-i="trip-duration"></span><h1>Patrol time: two-thirds of every shift down to about one-seventh</h1><span class="brk"></span>
+    <p class="sub">Same six patrollers, same 24/7 coverage, same MMS deadlines. What changes is how much of each 8-hour shift the patrol itself consumes.</p></div>
+  <div class="kpis" id="kpiTime"></div>
+  <div class="g2">
+    <div class="card"><h2><span class="i acc" data-i="entity-colleague"></span>One patroller’s 8-hour shift<span class="qm" tabindex="0" role="button" aria-label="How this is calculated" data-q="shift">?</span></h2>
+      <div class="chart sm"><canvas id="fShift"></canvas></div>
+      <p class="small mut">Today: two-thirds of the shift, as described by Vaughan. New routes: route driving plus office prep before each route, spread across the six patroller-shifts of a day.</p></div>
+    <div class="card"><h2><span class="i acc" data-i="action-check-circle"></span>Where patroller time goes with the new routes<span class="qm" tabindex="0" role="button" aria-label="How this is calculated" data-q="pie">?</span></h2>
+      <div class="chart sm"><canvas id="chPie"></canvas></div>
+      <p class="small mut">Share of all paid patroller hours in a year (6 shifts a day × 8 h × 365 days).</p></div>
+  </div>
+  <div class="g2">
+    <div class="card"><h2><span class="i acc" data-i="accent-timeline"></span>Patrol hours per year<span class="qm" tabindex="0" role="button" aria-label="How this is calculated" data-q="hours">?</span></h2>
+      <div class="chart sm"><canvas id="chHours"></canvas></div></div>
+    <div class="card"><h2><span class="i acc" data-i="trip-odometer"></span>Kilometres driven per year<span class="qm" tabindex="0" role="button" aria-label="How this is calculated" data-q="km">?</span></h2>
+      <div class="chart sm"><canvas id="fKm"></canvas></div></div>
+  </div>
+  <div class="note"><h3><span class="i" data-i="support-info"></span>Why the drop is larger than half</h3><p class="small">Going from two-thirds of a shift to one-third would already halve patrol time. The routes do better because the full city needs only about 5.2 hours of driving a day once every route is sized to its class and its MMS frequency. Shared across six patroller-shifts, that is under one hour of driving each, plus prep.</p></div>
+  <div class="pgnav"><a class="btn2" href="#summary">Back to summary</a><a class="btn" href="#payback">Cost and payback</a></div>
+</section>
+
+<section class="page" data-page="payback" hidden>
+  <div class="ph"><span class="i lg acc" data-i="accent-timeline"></span><h1>Cost and payback</h1><span class="brk"></span>
+    <p class="sub">Annual patrol cost today against the new routes, the payback on the Category A contract, and every assumption behind the numbers.</p></div>
+  <div class="kpis" id="kpiPay"></div>
+  <div class="g2">
+    <div class="card"><h2><span class="i acc" data-i="nav-kanban"></span>Annual patrol cost, labour and fuel<span class="qm" tabindex="0" role="button" aria-label="How this is calculated" data-q="cost">?</span></h2>
+      <div class="chart sm"><canvas id="chCost"></canvas></div></div>
+    <div class="card"><h2><span class="i acc" data-i="support-ideas"></span>Where the annual savings come from<span class="qm" tabindex="0" role="button" aria-label="How this is calculated" data-q="saveSplit">?</span></h2>
+      <div class="chart sm"><canvas id="chSave"></canvas></div>
+      <p class="small mut">Fuel is cash the City stops spending. Labour is capacity returned to Roads, valued at $45 an hour.</p></div>
+  </div>
+  <div class="g2">
+    <div class="card"><h2><span class="i acc" data-i="nav-table"></span>Five-year view<span class="qm" tabindex="0" role="button" aria-label="How this is calculated" data-q="y5">?</span></h2>
+      <div class="tw"><table><thead><tr><th>Year</th><th class="n">Savings, as designed</th><th class="n">Conservative</th><th class="n">Category A</th><th class="n">Net</th></tr></thead><tbody id="tbl5"></tbody></table></div>
+      <p class="small mut">Category A is counted at its full year-one value every year, plus the 3% CPI cap. Renewals carry no implementation, survey or training fees, so the real net is higher.</p></div>
+    <div class="card"><h2><span class="i acc" data-i="entity-goal"></span>Two ways to read it<span class="qm" tabindex="0" role="button" aria-label="How this is calculated" data-q="two">?</span></h2>
+      <div class="vs"><div class="side2"><span class="xs mut">Routes as designed</span><b id="rdA"></b><span class="xs mut" id="rdA2"></span></div><span class="arr">or</span><div class="side2"><span class="xs mut">Conservative floor</span><b id="rdC"></b><span class="xs mut" id="rdC2"></span></div></div>
+      <p class="small">The conservative floor assumes patrol only drops from two-thirds to one-third of each shift, halving today’s patrol time and fuel. Even then, Category A pays back in about three months.</p>
+    </div>
+  </div>
+  <div class="card"><h2><span class="i acc" data-i="settings-preferences"></span>Assumptions</h2>
+    <ul class="clean small">
+      <li>Patrollers: 2 per shift (east and west of Hwy 400), 3 shifts a day, 365 days. Today each patrols two-thirds of an 8-hour shift, as described by Vaughan.</li>
+      <li>Labour: $45 an hour, applied to patrol hours only.</li>
+      <li>New routes: 1,897 h of route driving a year from the plan (all classes, travel from 2800 Rutherford Rd included) plus 471 h of office prep before routes, from the December 2026 simulation.</li>
+      <li>Distance: 56,171 km a year from the plan. Today’s distance assumes the same average patrol speed as the new routes, about 29.6 km/h.</li>
+      <li>Fuel: pickup trucks at 17 L/100 km and $1.45 a litre. CO<sub>2</sub> at 2.3 kg per litre of gasoline.</li>
+      <li>Investment: the Category A contract, $79,925 excluding HST for year one, carried at full value each year with a 3% CPI increase.</li>
+      <li>Not counted: lower vehicle maintenance and wear, overtime avoided, and inflation in wages or fuel. Each would raise the savings.</li>
+    </ul></div>
+  <div class="pgnav"><a class="btn2" href="#time">Back to patrol time</a><a class="btn" href="#summary">Back to summary</a></div>
+</section>
+
 <section class="page" data-page="next" hidden>
   <div class="ph"><span class="i lg acc" data-i="action-flag"></span><h1>Points to confirm, and next steps</h1></div>
   <div class="g2">
@@ -433,8 +529,9 @@ function bindTips(root){root.querySelectorAll('[data-t]').forEach(el=>{el.onmous
 
 /* ---------- pages and navigation ---------- */
 const PAGES=[['overview','Overview','nav-report','Plan'],['standard','MMS standard','support-documentation','Plan'],['network','Road network','entity-route','Plan'],['method','Method','entity-workflow','Plan'],
- ['scenarios','Compare scenarios','nav-kanban','Scenarios'],['map','Map and player','nav-map','Scenarios'],['schedule','December schedule','nav-scheduler','Scenarios'],['next','Next steps','action-flag','Wrap-up']];
-const TOCD={standard:'How often each class must be patrolled.',network:'Kilometres by class, exclusions, class check.',method:'How the routes are built, step by step.',scenarios:'Scenario A against B, side by side.',map:'Every route on the map, and the route player.',schedule:'December 2026, shift by shift.',next:'Open points and what happens next.'};
+ ['scenarios','Compare scenarios','nav-kanban','Scenarios'],['map','Map and player','nav-map','Scenarios'],['schedule','December schedule','nav-scheduler','Scenarios'],
+ ['summary','Payback summary','nav-report','Financial'],['time','Patrol time','trip-duration','Financial'],['payback','Cost and payback','accent-timeline','Financial'],['next','Next steps','action-flag','Wrap-up']];
+const TOCD={standard:'How often each class must be patrolled.',network:'Kilometres by class, exclusions, class check.',method:'How the routes are built, step by step.',scenarios:'Scenario A against B, side by side.',map:'Every route on the map, and the route player.',schedule:'December 2026, shift by shift.',summary:'What the plan saves and how fast it pays back.',time:'Patrol time per shift, today against the new routes.',payback:'Annual cost, savings, five-year view and assumptions.',next:'Open points and what happens next.'};
 function buildNav(){let g='',h=`<a class="nav navtog" href="#" id="navTog">${ico('controls-back')}<span class="nl">Collapse menu</span></a>`;PAGES.forEach(([id,l,i,gr],k)=>{if(gr!==(PAGES[k-1]||[])[3])h+=`<div class="grp"><span>${gr}</span></div>`;h+=`<a class="nav" href="#${id}" data-p="${id}" title="${l}">${ico(i)}<span class="nl">${l}</span></a>`;});
  document.getElementById('side').innerHTML=h+`<div class="sidefoot"><span style="display:flex;gap:6px;align-items:center;font-weight:700;color:var(--t)">${ico('entity-building','sm')}City of Vaughan</span><span>Road patrol, O. Reg. 239/02</span><span>Prepared by Baseline · Nov 2026</span></div>`;
  document.getElementById('mobnav').innerHTML=PAGES.map(([id,l,i])=>`<a class="nav" href="#${id}" data-p="${id}">${ico(i,'sm')}<span>${l}</span></a>`).join('');
@@ -444,7 +541,7 @@ function showPage(p,force){if(!PAGES.some(x=>x[0]===p))p='overview';PAGE=p;
  document.querySelectorAll('.page').forEach(s=>s.hidden=s.dataset.page!==p);
  document.querySelectorAll('.nav[data-p]').forEach(a=>a.setAttribute('aria-current',a.dataset.p===p?'page':'false'));
  document.getElementById('main').scrollTop=0;
- const fn={network:drawNetwork,scenarios:drawScenarios,map:drawMapPage,schedule:drawSchedule,overview:drawOverview}[p];if(fn)fn(force);}
+ const fn={network:drawNetwork,scenarios:drawScenarios,map:drawMapPage,schedule:drawSchedule,overview:drawOverview,summary:drawSummary,time:drawTime,payback:drawPayback}[p];if(fn)fn(force);}
 addEventListener('hashchange',()=>showPage(location.hash.slice(1)));
 
 /* ---------- static content ---------- */
@@ -650,6 +747,116 @@ function openShift(day,sh){const b=shiftBreak(day,sh),h0=SH.find(x=>x[0]===sh)[1
 function closePane(){document.getElementById('pane').classList.remove('open');document.querySelectorAll('.mini.sel').forEach(x=>x.classList.remove('sel'));}
 document.getElementById('paneX').onclick=closePane;
 
+/* ---------- financial pages (Financial payback analysis) ---------- */
+const ff=(x,d=0)=>Number(x).toLocaleString('en-CA',{minimumFractionDigits:d,maximumFractionDigits:d});
+const $=(x,d=0)=>'$'+ff(x,d);
+const $k=x=>'$'+ff(x/1000,0)+'K';
+const QH={'Annual savings':'save','Payback':'pay','Five-year net value':'net','Hours returned to Roads':'hrs','Fuel saved':'fuel','Patroller-shifts a day':'six','Patrol per shift, today':'perB','Patrol per shift, new routes':'perA','Patrol hours a year':'hours','Kilometres a year':'km','Patrol cost today':'costB','With the new routes':'costA','Category A, year one':'catA'};
+const qmH=q=>q?`<span class="qm" tabindex="0" role="button" aria-label="How this is calculated" data-q="${q}">?</span>`:'';
+const fkpi=(i,h,v,n,cl='')=>`<div class="kpi ${cl}"><span class="kh">${ico(i,'sm acc')}${h}${qmH(QH[h])}</span><span class="kv">${v}</span><span class="kn">${n}</span></div>`;
+const Q={
+ save:'Today: 11,680 patrol hours × $45 = $525,600 of labour, plus fuel on about 345,850 km (17 L/100 km at $1.45/L) ≈ $85,250. Total ≈ $611K. New routes: 2,368 h × $45 = $106,560, plus fuel on 56,171 km ≈ $13,850. Total ≈ $120K. Difference ≈ $490K a year. Conservative floor: half of today’s patrol hours and fuel ≈ $305K.',
+ pay:'Category A year-one contract, $79,925, divided by monthly savings. As designed: $490K ÷ 12 ≈ $40.9K a month, so 2.0 months. Conservative floor: $305K ÷ 12 ≈ $25.5K a month, so 3.1 months.',
+ net:'Five years of savings at $490K a year = $2.45M, held flat with no wage or fuel inflation. Minus Category A counted at full year-one value every year, increased 3% a year (the CPI cap) = $424K. Net ≈ $2.03M.',
+ hrs:'11,680 patrol hours a year today − 2,368 with the new routes = 9,312 hours. A full-time year is about 2,080 hours, so 9,312 ÷ 2,080 ≈ 4.5 staff of capacity returned to Roads.',
+ fuel:'Kilometres saved (about 345,850 today − 56,171 with the routes) × 17 L/100 km × $1.45/L. CO₂ at 2.3 kg per litre of gasoline. Today’s kilometres are an estimate (see Patrol time), so treat this as an upper bound until Citycare trip data confirms it.',
+ six:'2 patrollers per shift, one east and one west of Hwy 400, × 3 shifts (day, afternoon, overnight) = 6 patroller-shifts a day, 7 days a week, 2,190 a year.',
+ perB:'As described by Vaughan: each patroller patrols about two-thirds of an 8-hour shift. 8 × 2/3 = 5.3 hours, on all six patroller-shifts, every day.',
+ perA:'The plan needs 1,897 h of route driving a year (every route on its MMS cycle, travel from 2800 Rutherford Rd included) plus 471 h of office prep before routes = 2,368 h. Divided over 2,190 patroller-shifts a year = 1.1 h on average. In practice each route takes about 3 h: on a typical day about two patrollers each drive one route and the other four have no patrol that shift.',
+ hours:'Today: 6 patroller-shifts × 5.3 h × 365 days = 11,680 h. New routes: 1,897 h of route driving, the sum of every route’s duration × how often its MMS class repeats it, plus 471 h of office prep before routes (from the December 2026 simulation, annualized) = 2,368 h.',
+ km:'New routes: 56,171 km a year, measured on the routes in the plan, each route’s length × how often it repeats. Today: an estimate, 11,680 patrol hours × the plan’s average speed of 29.6 km/h. It assumes patrollers are moving the whole time they patrol, so it likely overstates today’s distance. Citycare trip data for the current patrol areas will replace this estimate.',
+ costB:'11,680 patrol hours × $45 = $525,600 labour, plus about 345,850 estimated km × 17 L/100 km × $1.45/L ≈ $85,250 fuel. Total ≈ $611K a year.',
+ costA:'2,368 patrol hours × $45 = $106,560 labour, plus 56,171 km × 17 L/100 km × $1.45/L ≈ $13,850 fuel. Total ≈ $120K a year.',
+ catA:'The signed Category A contract amount for year one, excluding HST: licences, implementation, asset survey and training. Used as the full investment for the payback.',
+ payChart:'Green: annual savings as designed ($490K), accrued month by month. Dashed: conservative floor ($305K), where patrol only drops from two-thirds to one-third of each shift. Amber: Category A paid at the start of each year at full year-one value, plus 3% a year. Payback is where a savings line crosses the amber line.',
+ vs:'Today: 5.3 h of an 8-hour shift = 67%. New routes: 2,368 patrol hours a year ÷ 2,190 patroller-shifts = 1.1 h = 14%, the average across all six patroller-shifts. A route itself takes about 3 h; most shifts have none.',
+ shift:'Each bar is one 8-hour shift. Today: 5.3 h patrol (two-thirds) and 2.7 h free. New routes: the year’s 2,368 patrol hours spread over 2,190 patroller-shifts = 1.1 h patrol and 6.9 h free on average. Individual shifts vary: a shift with a route spends about 3 h on it, and many shifts have no route at all.',
+ pie:'All paid patroller hours in a year: 6 shifts × 8 h × 365 days = 17,520 h. Route driving 1,897 h (10.8%), office prep 471 h (2.7%), and the remaining 15,152 h (86.5%) free for other work.',
+ cost:'Labour = patrol hours × $45. Fuel = kilometres × 17 L/100 km × $1.45/L. Today: 11,680 h and about 345,850 estimated km. New routes: 2,368 h and 56,171 km from the plan.',
+ saveSplit:'Labour: (11,680 − 2,368) hours × $45 ≈ $419K, capacity returned to Roads. Fuel: about $71K, cash the City stops spending. Together ≈ $490K a year. The fuel share depends on today’s estimated kilometres.',
+ y5:'Savings held flat every year, with no wage or fuel inflation. Category A at $79,925 for year one, increased 3% a year (the CPI cap), and counted at full value even though renewals carry no implementation, survey or training fees. Net = savings as designed − Category A.',
+ two:'As designed: Vaughan drives only the routes the plan schedules, 2,368 h a year. Conservative floor: patrol drops from 5.3 h to 2.7 h on every shift, halving today’s hours and fuel: 5,840 h × $45 = $262,800, plus half of today’s fuel ≈ $42,600, total ≈ $305K.'};
+const tipEl=document.getElementById('tip');
+function showTip(el){tipEl.textContent=Q[el.dataset.q]||'';tipEl.style.display='block';const r=el.getBoundingClientRect(),w=tipEl.offsetWidth,h=tipEl.offsetHeight;const x=Math.min(Math.max(8,r.left+r.width/2-w/2),innerWidth-w-8);let y=r.bottom+8;if(y+h>innerHeight-8)y=Math.max(8,r.top-h-8);tipEl.style.left=x+'px';tipEl.style.top=y+'px';}
+const hideTip=()=>{tipEl.style.display='none';};
+document.addEventListener('mouseover',e=>{const q=e.target.closest('.qm');if(q)showTip(q);else if(document.activeElement?.classList?.contains('qm')===false||!e.target.closest('.tip'))hideTip();});
+document.addEventListener('focusin',e=>{const q=e.target.closest('.qm');if(q)showTip(q);});
+document.addEventListener('focusout',hideTip);
+document.addEventListener('click',e=>{const q=e.target.closest('.qm');if(q){showTip(q);}else hideTip();});
+document.getElementById('main').addEventListener('scroll',hideTip,{passive:true});
+
+/* ---------- model ---------- */
+const M=(()=>{const rate=45,lp=0.17,price=1.45,co2=2.3,inv=79925,cpi=0.03,spd=56171/1897;
+ const shifts=6*365,paid=shifts*8;
+ const bH=shifts*8*2/3,bKm=bH*spd,bL=bH*rate,bF=bKm*lp*price;
+ const aDrive=1897,aPrep=471,aH=aDrive+aPrep,aKm=56171,aL=aH*rate,aF=aKm*lp*price;
+ const save=(bL+bF)-(aL+aF),cons=bH/2*rate+bF/2;
+ const cost=[0,1,2,3,4].map(y=>inv*Math.pow(1+cpi,y));
+ return {rate,inv,shifts,paid,bH,bKm,bL,bF,aDrive,aPrep,aH,aKm,aL,aF,save,cons,cost,
+  litres:(bKm-aKm)*lp,co2t:(bKm-aKm)*lp*co2/1000,perB:bH/shifts,perA:aH/shifts};})();
+
+const tipK=c=>`${c.dataset.label?c.dataset.label+': ':''}${$(c.raw)}`;
+
+function drawSummary(){
+ const pm=M.inv/(M.save/12),pc=M.inv/(M.cons/12),tot5=M.save*5,c5=M.cost.reduce((a,b)=>a+b,0);
+ document.getElementById('kpiSum').innerHTML=
+  fkpi('support-ideas','Annual savings',$k(M.save),`${ff((1-(M.aL+M.aF)/(M.bL+M.bF))*100)}% of today’s patrol cost`,'hl')+
+  fkpi('accent-timeline','Payback',ff(pm,1)+' months',`on the Category A contract (${ff(pc,1)} conservative)`)+
+  fkpi('nav-kanban','Five-year net value','$'+ff((tot5-c5)/1e6,2)+'M',`${ff(tot5/c5,1)}× the five-year contract cost`)+
+  fkpi('entity-colleague','Hours returned to Roads',ff(M.bH-M.aH),`per year, about ${ff((M.bH-M.aH)/2080,1)} full-time staff`)+
+  fkpi('trip-odometer','Fuel saved',$k(M.bF-M.aF),`${ff(M.litres)} L and ${ff(M.co2t)} t CO\u2082 a year`);
+ document.getElementById('vsB').textContent=ff(M.perB/8*100)+'%  ·  '+ff(M.perB,1)+' h';
+ document.getElementById('vsA').textContent=ff(M.perA/8*100)+'%  ·  '+ff(M.perA,1)+' h';
+ const mo=[...Array(61).keys()],cum=(a)=>mo.map(m=>a*m/12);
+ const costC=mo.map(m=>{let s=0;for(let y=0;y<5;y++)if(m>=y*12)s+=M.cost[y];return s;});
+ mkChart('chPay',{type:'line',data:{labels:mo.map(m=>m%12===0?(m===0?'Start':'Year '+m/12):'M'+m),datasets:[
+  {label:'Savings, routes as designed',data:cum(M.save),borderColor:tok('--done'),backgroundColor:tok('--done'),borderWidth:3,pointRadius:0,tension:0},
+  {label:'Savings, conservative floor',data:cum(M.cons),borderColor:tok('--c4'),backgroundColor:tok('--c4'),borderWidth:2,borderDash:[6,4],pointRadius:0},
+  {label:'Category A cost',data:costC,borderColor:tok('--c5'),backgroundColor:tok('--c5'),borderWidth:2,stepped:true,pointRadius:0}]},
+  options:{interaction:{mode:'index',intersect:false},scales:{x:{ticks:{autoSkip:false,maxRotation:0,callback:(v,i)=>i%12===0?(i===0?'Start':'Year '+i/12):''},grid:{display:false}},y:{ticks:{callback:v=>'$'+ff(v/1e6,1)+'M'}}},
+   plugins:{legend:{position:'bottom',labels:{boxWidth:14}},tooltip:{callbacks:{title:c=>'Month '+c[0].dataIndex,label:tipK}}}}});
+ document.getElementById('payNote').textContent=`Savings accrue monthly; the contract is paid at the start of each year. Cumulative savings pass the year-one contract in month ${Math.ceil(pm)} as designed, or month ${Math.ceil(pc)} on the conservative floor. Five-year savings: $${ff(tot5/1e6,2)}M against ${$k(c5)} of contract cost.`;
+}
+function drawTime(){
+ document.getElementById('kpiTime').innerHTML=
+  fkpi('entity-teams','Patroller-shifts a day','6','2 per shift × 3 shifts, 7 days')+
+  fkpi('trip-duration','Patrol per shift, today',ff(M.perB,1)+' h','two-thirds of an 8-hour shift')+
+  fkpi('action-check-circle','Patrol per shift, new routes',ff(M.perA,1)+' h',`${ff(M.aDrive/365/6,2)} h driving plus prep`,'hl')+
+  fkpi('accent-timeline','Patrol hours a year',ff(M.aH),`down from ${ff(M.bH)}`)+
+  fkpi('trip-odometer','Kilometres a year',ff(M.aKm),`down from ${ff(M.bKm)}`);
+ const busy=tok('--busy');
+ mkChart('fShift',{type:'bar',data:{labels:['Today','New routes'],datasets:[
+  {label:'Patrol',data:[M.perB,M.perA],backgroundColor:[busy,tok('--ac')],borderRadius:4},
+  {label:'Free for other work',data:[8-M.perB,8-M.perA],backgroundColor:tok('--done'),borderRadius:4}]},
+  options:{indexAxis:'y',scales:{x:{stacked:true,max:8,title:{display:true,text:'hours of an 8-hour shift'}},y:{stacked:true,grid:{display:false}}},
+   plugins:{legend:{position:'bottom',labels:{boxWidth:14}},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${ff(c.raw,1)} h (${ff(c.raw/8*100)}%)`}}}}});
+ mkChart('chPie',{type:'doughnut',data:{labels:['Route driving','Route prep','Free for other work'],datasets:[{data:[M.aDrive,M.aPrep,M.paid-M.aH],backgroundColor:[tok('--ac'),tok('--c2'),tok('--done')],borderColor:tok('--cd'),borderWidth:2}]},
+  options:{cutout:'58%',plugins:{legend:{position:'right',labels:{boxWidth:14}},tooltip:{callbacks:{label:c=>`${c.label}: ${ff(c.raw)} h (${ff(c.raw/M.paid*100,1)}%)`}}}}});
+ const bar=(id,v,unit)=>mkChart(id,{type:'bar',data:{labels:['Today','New routes'],datasets:[{data:v,backgroundColor:[busy,tok('--ac')],borderRadius:6}]},
+  options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>ff(c.raw)+' '+unit}}},scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>ff(v/1000)+'K'}}}}});
+ bar('chHours',[M.bH,M.aH],'h');bar('fKm',[M.bKm,M.aKm],'km');
+}
+function drawPayback(){
+ const pm=M.inv/(M.save/12),pc=M.inv/(M.cons/12);
+ document.getElementById('kpiPay').innerHTML=
+  fkpi('nav-kanban','Patrol cost today',$k(M.bL+M.bF),'labour and fuel, per year')+
+  fkpi('action-check-circle','With the new routes',$k(M.aL+M.aF),'labour and fuel, per year')+
+  fkpi('support-ideas','Annual savings',$k(M.save),`conservative floor ${$k(M.cons)}`,'hl')+
+  fkpi('entity-building','Category A, year one',$(M.inv),'contract value, excluding HST')+
+  fkpi('accent-timeline','Payback',ff(pm,1)+' months',`${ff(pc,1)} months on the conservative floor`);
+ mkChart('chCost',{type:'bar',data:{labels:['Today','New routes'],datasets:[
+  {label:'Labour',data:[M.bL,M.aL],backgroundColor:tok('--c2'),borderRadius:4},
+  {label:'Fuel',data:[M.bF,M.aF],backgroundColor:tok('--c5'),borderRadius:4}]},
+  options:{scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>$k(v)}}},plugins:{legend:{position:'bottom',labels:{boxWidth:14}},tooltip:{callbacks:{label:tipK}}}}});
+ mkChart('chSave',{type:'pie',data:{labels:['Labour hours returned','Fuel saved'],datasets:[{data:[M.bL-M.aL,M.bF-M.aF],backgroundColor:[tok('--c2'),tok('--c5')],borderColor:tok('--cd'),borderWidth:2}]},
+  options:{plugins:{legend:{position:'right',labels:{boxWidth:14}},tooltip:{callbacks:{label:c=>`${c.label}: ${$(c.raw)} (${ff(c.raw/M.save*100)}%)`}}}}});
+ let cs=0,cc=0,cn=0;document.getElementById('tbl5').innerHTML=M.cost.map((c,y)=>{cs+=M.save;cc+=M.cons;cn+=c;return `<tr><td>Year ${y+1}</td><td class="n">${$(M.save)}</td><td class="n">${$(M.cons)}</td><td class="n">${$(c)}</td><td class="n">${$(M.save-c)}</td></tr>`;}).join('')+
+  `<tr class="tot"><td>Five years</td><td class="n">${$(cs)}</td><td class="n">${$(cc)}</td><td class="n">${$(cn)}</td><td class="n">${$(cs-cn)}</td></tr>`;
+ document.getElementById('rdA').textContent=$k(M.save)+' a year';document.getElementById('rdA2').textContent=`payback in ${ff(pm,1)} months`;
+ document.getElementById('rdC').textContent=$k(M.cons)+' a year';document.getElementById('rdC2').textContent=`payback in ${ff(pc,1)} months`;
+}
+function finToc(){document.getElementById('ftoc').innerHTML=[['time','Patrol time','trip-duration','Two-thirds of a shift down to about one-seventh, hour by hour.'],['payback','Cost and payback','accent-timeline','Annual cost, savings, five-year view and assumptions.'],['overview','Road patrol plan','entity-route','The routes, method and December schedule behind these figures.']].map(([id,l,i,d])=>`<a class="step" href="#${id}" style="text-decoration:none;color:inherit"><span class="sh">${ico(i,'acc')}<h3>${l}</h3></span><span class="small mut">${d}</span></a>`).join('');}
+
 /* ---------- scenario and theme ---------- */
 function setScenario(s){SC=s;['A','B'].forEach(x=>document.getElementById('s'+x).setAttribute('aria-pressed',x===s));
  if(map){closePlayer();buildRoutes();legend();}
@@ -669,7 +876,7 @@ document.getElementById('pPlay').onclick=play;document.getElementById('pReset').
 document.getElementById('scrub').oninput=e=>{stop();if(P)render(e.target.value/1000*P.total);};
 document.getElementById('pSpeed').oninput=speedLabel;
 
-buildNav();statics();paintIcons();speedLabel();setPlayBtn(false);
+buildNav();statics();finToc();paintIcons();speedLabel();setPlayBtn(false);
 const appEl=document.querySelector('.app');
 function setCol(c){appEl.classList.toggle('col',c);document.querySelector('#navTog .nl').textContent=c?'Expand menu':'Collapse menu';try{localStorage.setItem('vpp-col',c?'1':'0');}catch(e){}setTimeout(()=>map&&map.invalidateSize(),220);}
 document.getElementById('navTog').onclick=e=>{e.preventDefault();setCol(!appEl.classList.contains('col'));};
