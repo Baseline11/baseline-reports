@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="en">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Storm Playbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Tokens follow the Citycare app prototype */
+:root{
+  --pg:#F5F5F7; --cd:#FFFFFF; --ln:#E3E3E8; --t:#1C1C1E; --s:#5C5C61; --ic:#808080;
+  --ac:#0072E5; --at:#005BB8; --ab:#E6F0FF; --rT:#A32020; --rB:#FDECEC;
+  --int:#0072E5; --sub:#4E9A1A; --none:#9A9AA0; --grid:#EEEEF2; --scrim:rgba(0,0,0,.35); --map:#EEF0EA;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --pg:#121214; --cd:#1C1C1E; --ln:#333338; --t:#F2F2F7; --s:#A1A1A8; --ic:#8E8E93;
+  --ac:#0072E5; --at:#4DA3FF; --ab:#0E2A4A; --rT:#FF8A80; --rB:#4A1616;
+  --int:#3D8BFF; --sub:#73B82E; --none:#7A7A82; --grid:#26262A; --scrim:rgba(0,0,0,.55); --map:#24262A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --pg:#121214; --cd:#1C1C1E; --ln:#333338; --t:#F2F2F7; --s:#A1A1A8; --ic:#8E8E93;
+  --ac:#0072E5; --at:#4DA3FF; --ab:#0E2A4A; --rT:#FF8A80; --rB:#4A1616;
+  --int:#3D8BFF; --sub:#73B82E; --none:#7A7A82; --grid:#26262A; --scrim:rgba(0,0,0,.55); --map:#24262A; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--pg);color:var(--t);font:14px/1.35 Nunito,system-ui,-apple-system,'Segoe UI',sans-serif;display:flex;flex-direction:column;overflow:hidden}
+button,input,select{font:inherit;color:inherit}
+.btn{background:var(--ac);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn2{background:var(--cd);color:var(--at);border:1px solid var(--ln);border-radius:8px;padding:7px 12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn2:hover{border-color:var(--ac)}
+.btn[disabled],.btn2[disabled]{opacity:.45;cursor:default}
+.fi{padding:7px 10px;border-radius:8px;border:1px solid var(--ln);background:var(--cd);color:var(--t);min-width:0}
+.fi[disabled]{background:var(--pg);color:var(--s)}
+.fi:focus,.btn:focus-visible,.btn2:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+.mut{color:var(--s)}
+.ell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--cd);border-bottom:1px solid var(--ln);flex-wrap:wrap}
+.crumb{display:flex;align-items:center;gap:8px;font-weight:800;font-size:16px}
+.crumb .mk{width:28px;height:28px;border-radius:8px;background:var(--ac);color:#fff;display:grid;place-items:center}
+.crumb .sl{color:var(--s);font-weight:600}
+#pbName{font-weight:800;font-size:15px;width:260px}
+.grow{flex:1}
+.status{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--s)}
+.status i{width:8px;height:8px;border-radius:50%;background:#2E9E4F}
+.status.dirty{color:#B26A00}.status.dirty i{background:#F5A524}
+
+/* toolbar */
+.tools{display:flex;align-items:center;gap:8px;padding:10px 16px;flex-wrap:wrap}
+.fchip{font-size:13px;font-weight:700;padding:5px 12px;border-radius:999px;border:1px solid var(--ln);background:var(--cd);color:var(--s);cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.fchip em{font-style:normal;font-size:11px;background:var(--pg);border-radius:999px;padding:0 6px}
+.fchip.on{background:var(--ac);border-color:var(--ac);color:#fff}.fchip.on em{background:rgba(255,255,255,.22)}
+.sgc{display:inline-flex;border:1px solid var(--ln);border-radius:8px;overflow:hidden}
+.sgc button{border:none;border-right:1px solid var(--ln);background:var(--cd);color:var(--s);padding:6px 11px;font-weight:700;cursor:pointer}
+.sgc button:last-child{border-right:none}.sgc button.on{background:var(--ab);color:var(--at)}
+.legend{display:flex;gap:12px;align-items:center;font-size:12px;color:var(--s);font-weight:700;flex-wrap:wrap}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-2px}
+.stats{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+.stat{background:var(--cd);border:1px solid var(--ln);border-radius:10px;padding:4px 10px;font-size:12px;font-weight:700;color:var(--s)}
+.stat b{font-size:15px;color:var(--t);margin-right:3px}.stat.bad b{color:var(--rT)}
+
+/* gantt */
+.gwrap{flex:1;min-height:0;margin:0 16px 16px;border:1px solid var(--ln);border-radius:12px;background:var(--cd);overflow:auto;position:relative}
+.gantt{--lw:350px;--pph:40;position:relative;width:calc(var(--lw) + 36px * var(--pph))}
+.gr{display:grid;grid-template-columns:var(--lw) calc(36px * var(--pph));border-bottom:1px solid var(--ln);height:44px}
+.gr.hd{position:sticky;top:0;z-index:5;height:34px;background:var(--cd);border-bottom:1px solid var(--ln)}
+.gr.grp{height:30px;background:var(--pg)}
+.gr.grp .gh{background:var(--pg);font-size:12px;font-weight:800;color:var(--s);text-transform:uppercase;letter-spacing:.04em}
+.gh{position:sticky;left:0;z-index:3;background:var(--cd);border-right:1px solid var(--ln);display:flex;align-items:center;gap:8px;padding:0 10px;min-width:0}
+.gr.hd .gh{z-index:6;font-size:12px;font-weight:700;color:var(--s)}
+.gh .rn{flex:1;min-width:0}
+.gh .rn b{display:block;font-size:13px}
+.gh .rn span{font-size:11px;color:var(--s);font-weight:600}
+.gh select{width:128px;padding:4px 6px;font-size:12px;font-weight:700;border-radius:7px}
+.gh select.int{color:var(--int);border-color:color-mix(in srgb,var(--int) 45%,var(--ln))}
+.gh select.sub{color:var(--sub);border-color:color-mix(in srgb,var(--sub) 45%,var(--ln))}
+.thumb{width:32px;height:32px;flex:none;border-radius:6px;background:var(--map);border:1px solid var(--ln)}
+.thumb path{fill:none;stroke:var(--ac);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.axis{position:relative}
+.axis span{position:absolute;top:0;bottom:0;display:flex;align-items:center;padding-left:4px;font-size:11px;font-weight:700;color:var(--s);border-left:1px solid var(--ln)}
+.axis span.major{color:var(--t)}
+.lane{position:relative;cursor:copy;background-image:linear-gradient(90deg,var(--ln) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:calc(6px * var(--pph)) 100%,calc(1px * var(--pph)) 100%}
+.gr:hover .lane{background-color:color-mix(in srgb,var(--ab) 45%,transparent)}
+.ghost{position:absolute;top:7px;bottom:7px;border:1.5px dashed var(--ac);border-radius:6px;pointer-events:none;display:none;align-items:center;padding:0 6px;font-size:11px;font-weight:700;color:var(--at);white-space:nowrap;overflow:hidden}
+.lane:hover .ghost{display:flex}
+.lane:has(.blk:hover) .ghost{display:none}
+.blk{position:absolute;top:6px;bottom:6px;display:flex;cursor:grab;user-select:none;touch-action:none;border-radius:6px}
+.blk .run{position:relative;height:100%;display:flex;align-items:center;gap:5px;padding:0 7px;font-size:12px;font-weight:700;color:#fff;overflow:hidden;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,.15);border-right:2px solid var(--cd)}
+.blk .run:first-child{border-radius:6px 0 0 6px}.blk .run:last-child{border-radius:0 6px 6px 0;border-right:none}.blk .run:only-child{border-radius:6px}
+.blk.int .run{background-color:var(--int)}.blk.sub .run{background-color:var(--sub)}.blk.none .run{background-color:var(--none)}
+.blk.open .run{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.22) 0 6px,transparent 6px 12px)}
+.blk .run.stp{background:var(--pg)!important;color:var(--s);border:1.5px dashed var(--ln);box-shadow:none}
+.blk .run .n{font-size:10px;opacity:.8;font-weight:800}
+.blk .tm{opacity:.85;font-weight:600;margin-left:auto}
+.blk.sel .run{outline:2px solid var(--t);outline-offset:-1px}
+.blk.clash .run:not(.stp){box-shadow:inset 0 0 0 2px var(--rT)}
+.blk .rs{position:absolute;right:0;top:0;bottom:0;width:9px;cursor:ew-resize;z-index:1}
+.blk.cas{cursor:default}
+.blk .lk{display:inline-flex;width:14px;height:14px;flex:none}
+.cas-link{position:absolute;top:50%;height:2px;border-top:2px dotted var(--s);pointer-events:none}
+.blk.drag{cursor:grabbing;opacity:.9;z-index:2}
+.empty{padding:40px;text-align:center;color:var(--s)}
+.empty b{display:block;color:var(--t);font-size:16px;margin-bottom:4px}
+
+/* side pane (prototype .pane) */
+.pane{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:100%;background:var(--cd);border-left:1px solid var(--ln);box-shadow:-10px 0 30px rgba(0,0,0,.16);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .2s ease;z-index:20}
+.pane.on{transform:none}
+.ph{display:flex;align-items:center;gap:8px;padding:10px 12px 10px 16px;border-bottom:1px solid var(--ln);min-height:54px}
+.ph b{flex:1;font-size:16px}
+.ib{background:none;border:none;padding:6px;border-radius:8px;cursor:pointer;color:var(--ic);display:inline-flex}
+.ib:hover{background:var(--ab)}
+.pb{flex:1;overflow:auto;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.lf{display:flex;flex-direction:column;gap:5px}
+.lf label,.sec{font-size:12px;font-weight:700;color:var(--s)}
+.sec{text-transform:uppercase;letter-spacing:.04em;margin-top:4px;padding-top:10px;border-top:1px solid var(--ln)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hint{font-size:12px;color:var(--s)}
+.pf{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--ln)}
+.note{background:var(--ab);color:var(--at);border-radius:10px;padding:9px 11px;font-size:13px;font-weight:600}
+.warn{background:var(--rB);color:var(--rT);border-radius:10px;padding:9px 11px;font-size:13px;font-weight:600}
+.mapbox{position:relative;height:190px;border-radius:12px;background:var(--map);border:1px solid var(--ln);overflow:hidden}
+.mapbox svg{width:100%;height:100%}
+.mapbox path{fill:none;stroke:var(--ac);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.mapbox .cap{position:absolute;left:10px;bottom:8px;font-size:12px;font-weight:700;background:var(--cd);border:1px solid var(--ln);border-radius:999px;padding:2px 9px}
+.ck{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--ln);border-radius:10px;cursor:pointer}
+.ck input{accent-color:var(--ac);width:17px;height:17px;margin-top:1px;flex:none}
+.ck b{display:block;font-size:13px}.ck span{font-size:12px;color:var(--s)}
+.ck.off{opacity:.55;cursor:default}
+.sum{display:flex;gap:6px;flex-wrap:wrap}
+.sum span{background:var(--pg);border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700}
+.dt{width:100%;border-collapse:collapse;font-size:13px}
+.dt td{padding:3px 0;border-bottom:1px solid var(--ln)}
+.dt input{width:100%;border:1px solid transparent;background:transparent;padding:5px 6px;border-radius:6px}
+.dt input:hover,.dt input:focus{border-color:var(--ln)}
+
+dialog{border:1px solid var(--ln);border-radius:14px;background:var(--cd);color:var(--t);padding:0;width:min(420px,calc(100vw - 32px));box-shadow:0 12px 36px rgba(0,0,0,.22)}
+dialog::backdrop{background:var(--scrim)}
+dialog .dlgbody{padding:18px;display:flex;flex-direction:column;gap:12px}
+dialog h2{margin:0;font-size:17px}dialog p{margin:0;color:var(--s)}
+dialog .row{display:flex;gap:8px;justify-content:flex-end}
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--t);color:var(--cd);padding:9px 16px;border-radius:999px;font-weight:700;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:40}
+#toast.on{opacity:1}
+#loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--pg);z-index:50;font-weight:800;color:var(--s)}
+</style>
+</head>
+<body>
+<div id="loading">Loading routes…</div>
+<script>
+  // Shows what went wrong instead of an endless "Loading routes…"
+  window.addEventListener('error', function(e){ var l = document.getElementById('loading'); if (l) l.textContent = 'Page error: ' + e.message + ' (line ' + e.lineno + ')'; });
+  setTimeout(function(){ var l = document.getElementById('loading'); if (l && /^Loading/.test(l.textContent)) l.textContent = 'Still waiting for the sheet after 30 s. Check Apps Script → Executions for getBootstrap.'; }, 30000);
+</script>
+
+<div class="top">
+  <div class="crumb"><span class="mk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 2v20M4.9 6.5l14.2 11M4.9 17.5l14.2-11"/></svg></span>Playbooks <span class="sl">›</span></div>
+  <input id="pbName" class="fi" aria-label="Playbook name">
+  <select id="pbOpen" class="fi" aria-label="Open a playbook" style="max-width:220px"></select>
+  <label class="status" title="Start On / End On in the Citycare import are counted from here">Storm starts <input id="stormStart" class="fi" type="datetime-local"></label>
+  <button class="btn2" id="btnNew">New playbook</button>
+  <span class="grow"></span>
+  <span class="status" id="status"><i></i><span id="statusTx">Saved</span></span>
+  <div class="sgc" id="theme" role="group" aria-label="Theme"><button data-th="light" title="Light mode">☀︎ Light</button><button data-th="dark" title="Dark mode">☾ Dark</button><button data-th="auto" title="Follow the computer’s setting">Auto</button></div>
+  <button class="btn2" id="btnPeople">People &amp; vehicles</button>
+  <button class="btn2" id="btnCsv">Export CSV</button>
+  <button class="btn" id="btnSave">Save playbook</button>
+</div>
+
+<div class="tools">
+  <div id="groups" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+  <input id="q" class="fi" type="search" placeholder="Find a route…" style="width:180px">
+  <div class="sgc" id="zoom"><button data-z="fit">Fit 36 h</button><button data-z="40" class="on">Normal</button><button data-z="72">Zoom</button></div>
+  <div class="legend"><span><i style="background:var(--int)"></i>Internal</span><span><i style="background:var(--sub)"></i>Subcontracted</span><span><i style="background:var(--none);background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.3) 0 4px,transparent 4px 8px)"></i>Not assigned yet</span><span><i style="background:var(--pg);border:1.5px dashed var(--ln)"></i>Repeat stopped</span><span>⛓ Cascading</span></div>
+  <div class="stats" id="stats"></div>
+</div>
+
+<div class="gwrap" id="gwrap"><div class="gantt" id="gantt"></div></div>
+
+<aside class="pane" id="pane" aria-label="Route event"></aside>
+<dialog id="dlg"><div id="dlgForm" class="dlgbody"></div></dialog>
+<div id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+var HOURS = 36, SNAP = 0.5, DEFAULT_DUR = 3, MAX_REPEAT = 12;
+var MAPS = window.ROUTE_MAPS || {};   // filled from the web service after load
+var LINK = '<svg class="lk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>';
+
+// ---------- backend: the Google Sheet's web service, or browser storage in the local preview ----------
+// The shared link carries the web service address and access key after the # (never sent to any server).
+// They're kept in this browser so the page still works after the # is cleared from the address bar.
+var CONF = (function(){
+  var h = {}, saved = {};
+  location.hash.replace(/^#/, '').split('&').forEach(function(kv){ var i = kv.indexOf('='); if (i > 0) h[kv.slice(0, i)] = decodeURIComponent(kv.slice(i + 1)); });
+  try { saved = JSON.parse(localStorage.getItem('storm-playbook-conf')) || {}; } catch(e){}
+  var c = {api:h.api || saved.api || '', key:h.key || saved.key || ''};
+  if (h.api || h.key) { try { localStorage.setItem('storm-playbook-conf', JSON.stringify(c)); } catch(e){} history.replaceState(null, '', location.pathname + location.search); }
+  return c;
+})();
+var REMOTE = !!(CONF.api && CONF.key);
+function call(fn){
+  var args = [].slice.call(arguments, 1);
+  if (!REMOTE) {
+    if (!window.DEMO_DATA) return Promise.reject(new Error('This link is missing its access key. Ask for the playbook link again.'));
+    return Promise.resolve(local[fn] ? local[fn].apply(null, args) : null);
+  }
+  // text/plain keeps this a simple request, which Apps Script answers across sites without a preflight
+  return fetch(CONF.api, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify({key:CONF.key, action:fn, args:args})})
+    .then(function(r){ if (!r.ok) throw new Error('The sheet did not answer (' + r.status + ')'); return r.json(); })
+    .then(function(j){ if (!j.ok) throw new Error(j.error || 'The sheet returned an error'); return j.data; });
+}
+var LS = 'storm-playbook-v3';
+function store(v){ try { if (v === undefined) return JSON.parse(localStorage.getItem(LS)) || {}; localStorage.setItem(LS, JSON.stringify(v)); } catch(e){ return {}; } }
+var local = {
+  getBootstrap: function(){
+    var d = JSON.parse(JSON.stringify(window.DEMO_DATA)), s = store();
+    if (s.people) { d.employees = s.people.employees; d.cityVehicles = s.people.cityVehicles; }
+    d.playbooks = Object.keys(s.pbs || {});
+    return d;
+  },
+  getPlaybook: function(name){ return store().pbs[name]; },
+  savePlaybook: function(pb, oldName){ var s = store(); s.pbs = s.pbs || {}; if (oldName && oldName !== pb.name) delete s.pbs[oldName]; s.pbs[pb.name] = pb; store(s); return Object.keys(s.pbs); },
+  savePeople: function(p){ var s = store(); s.people = p; store(s); return true; }
+};
+
+// ---------- state ----------
+var D, IX = {}, PB, savedName = null, playbooks = [], dirty = false;
+var group = 'Plow', sel = null, PPH = 40;
+var $ = function(s){ return document.querySelector(s); };
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function toast(m){ var t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(t._t); t._t = setTimeout(function(){ t.classList.remove('on'); }, 2600); }
+function fmtH(h){ var m = Math.round(h * 60); return '+' + Math.floor(m / 60) + 'h' + (m % 60 ? String(m % 60).padStart(2, '0') : ''); }
+function durTx(h){ return (Math.round(h * 10) / 10) + ' h'; }
+function snap(h){ return Math.round(h / SNAP) * SNAP; }
+
+function index(){
+  IX = {route:{}, sub:{}, truck:{}, emp:{}, cveh:{}, trucksBySub:{}};
+  D.routes.forEach(function(r){ IX.route[r.id] = r; });
+  D.subs.forEach(function(s){ IX.sub[s.id] = s; });
+  D.subVehicles.forEach(function(v){ IX.truck[v.id] = v; (IX.trucksBySub[v.sub] = IX.trucksBySub[v.sub] || []).push(v); });
+  D.employees.forEach(function(e){ IX.emp[e.id] = e; });
+  D.cityVehicles.forEach(function(v){ IX.cveh[v.id] = v; });
+}
+// "Plow Route 05A" -> "05": matches StreetOps home route H05, used to suggest who usually runs it
+function routeNum(r){ var m = /^Plow Route (\d+)/.exec(r.name); return m ? m[1] : ''; }
+function whoName(id){ if (!id) return ''; var k = id.slice(2); return id[0] === 'E' ? (IX.emp[k] || {}).name || '(removed)' : (IX.sub[k] || {}).name || '(removed)'; }
+function vehName(id){ if (!id) return ''; var k = id.slice(2); if (id[0] === 'C') return 'Unit ' + k; var t = IX.truck[k]; return t ? t.reg : '(removed)'; }
+function crewOf(routeId){ return PB.crew[routeId] || ''; }
+// Average length of past route events on the route; Worcester has no history yet, so 3 h for now.
+function avgHours(routeId){ var r = IX.route[routeId]; return r && r.avgHours ? r.avgHours : null; }
+function mapSvg(routeId, cls){ var p = MAPS[routeId]; return p ? '<svg class="' + cls + '" viewBox="0 0 160 160" aria-hidden="true"><path d="' + p + '"/></svg>' : '<svg class="' + cls + '" viewBox="0 0 160 160"></svg>'; }
+
+// ---------- route event model ----------
+// task = {id, routeId, title, start, dur (one run), repeat, stopAfter (0 = run all), cascade, who, vehicle}
+function defaultStart(){ var d = new Date(); d.setDate(d.getDate() + 1); var p = function(n){ return String(n).padStart(2, '0'); }; return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T18:00'; }
+function blank(name){ return {name:name, stormStart:defaultStart(), crew:{}, tasks:[]}; }
+function norm(t){ t.repeat = Math.max(1, Math.min(MAX_REPEAT, t.repeat || 1)); t.stopAfter = t.stopAfter && t.stopAfter < t.repeat ? t.stopAfter : 0; t.cascade = !!t.cascade; return t; }
+function runs(t){ return t.stopAfter || t.repeat; }               // runs that actually happen
+function span(t){ return t.dur * runs(t); }                        // hours the driver is busy
+function planned(t){ return t.dur * t.repeat; }                   // hours drawn, stopped runs included
+function chainKey(t){ return t.who && t.who[0] === 'E' ? t.who : (t.vehicle || ''); }
+function ordered(){ return PB.tasks.slice().sort(function(a, b){ return a.start - b.start || PB.tasks.indexOf(a) - PB.tasks.indexOf(b); }); }
+function prevOf(t){
+  var k = chainKey(t), p = null; if (!k) return null;
+  ordered().forEach(function(x){ if (x !== t && chainKey(x) === k && (x.start < t.start || (x.start === t.start && PB.tasks.indexOf(x) < PB.tasks.indexOf(t)))) p = x; });
+  return p;
+}
+// Cascading events start when the same driver's previous event ends.
+function resolve(){
+  for (var pass = 0; pass < 6; pass++) {
+    var moved = false;
+    ordered().forEach(function(t){
+      if (!t.cascade) return;
+      var p = prevOf(t); if (!p) return;
+      var s = Math.min(HOURS - planned(t), p.start + span(p));
+      if (s !== t.start && s >= 0) { t.start = s; moved = true; }
+    });
+    if (!moved) break;
+  }
+}
+function markDirty(){ dirty = true; status(); }
+function status(){ $('#status').classList.toggle('dirty', dirty); $('#statusTx').textContent = dirty ? 'Unsaved changes' : (savedName ? 'Saved' : 'Not saved yet'); }
+function uid(){ return 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+function task(){ return PB.tasks.filter(function(x){ return x.id === sel; })[0]; }
+
+function clashes(){
+  // a city employee or any vehicle on two events that overlap in time
+  var bad = {}, by = {};
+  PB.tasks.forEach(function(t){ [t.vehicle, t.who && t.who[0] === 'E' ? t.who : null].forEach(function(k){ if (k) (by[k] = by[k] || []).push(t); }); });
+  Object.keys(by).forEach(function(k){
+    var l = by[k].slice().sort(function(a, b){ return a.start - b.start; });
+    for (var i = 0; i < l.length; i++) for (var j = i + 1; j < l.length && l[j].start < l[i].start + span(l[i]) - 1e-9; j++) bad[l[i].id] = bad[l[j].id] = (k[0] === 'E' ? whoName(k) : vehName(k)) + ' is booked on two route events at the same time';
+  });
+  return bad;
+}
+
+// ---------- render ----------
+function inPlaybook(r){ return !!PB.crew[r.id] || PB.tasks.some(function(t){ return t.routeId === r.id; }); }
+function visibleRoutes(){
+  var q = $('#q').value.trim().toLowerCase();
+  return D.routes.filter(function(r){
+    if (group === 'In playbook') { if (!inPlaybook(r)) return false; }
+    else if (group !== 'All' && r.group !== group) return false;
+    return !q || r.name.toLowerCase().indexOf(q) >= 0;
+  });
+}
+function renderGroups(){
+  var counts = {All:D.routes.length};
+  D.routes.forEach(function(r){ counts[r.group] = (counts[r.group] || 0) + 1; });
+  counts['In playbook'] = D.routes.filter(inPlaybook).length;
+  $('#groups').innerHTML = ['Plow', 'Bus', 'Salt', 'Salt special', 'Sand', 'All', 'In playbook'].filter(function(g){ return counts[g] !== undefined; }).map(function(g){
+    return '<button class="fchip' + (g === group ? ' on' : '') + '" data-g="' + esc(g) + '">' + esc(g) + '<em>' + counts[g] + '</em></button>';
+  }).join('');
+}
+function blkHtml(t, r, bad){
+  var c = crewOf(r.id), P = PPH, cas = t.cascade && prevOf(t);
+  var cls = (c === 'internal' ? 'int' : c === 'sub' ? 'sub' : 'none') + (t.who && t.vehicle ? '' : ' open') + (sel === t.id ? ' sel' : '') + (bad[t.id] ? ' clash' : '') + (cas ? ' cas' : '');
+  var label = t.who ? whoName(t.who) + (t.vehicle ? ' · ' + vehName(t.vehicle) : '') : 'Not assigned';
+  var tip = (t.title || r.name) + ' · ' + fmtH(t.start) + ' to ' + fmtH(t.start + span(t)) + (t.repeat > 1 ? ' · ' + runs(t) + ' of ' + t.repeat + ' runs' : '') + (cas ? ' · cascades from ' + IX.route[cas.routeId].name : '') + ' · ' + label + (bad[t.id] ? ' · ' + bad[t.id] : '');
+  var h = '<div class="blk ' + cls + '" data-t="' + t.id + '" style="left:' + (t.start * P) + 'px;width:' + Math.max(18, planned(t) * P - 2) + 'px" title="' + esc(tip) + '">';
+  for (var i = 0; i < t.repeat; i++) {
+    var stp = t.stopAfter && i >= t.stopAfter;
+    h += '<div class="run' + (stp ? ' stp' : '') + '" style="width:' + (t.dur * P) + 'px">' +
+      (i === 0 ? (cas ? LINK : '') + '<span class="ell">' + esc(label) + '</span>' : (stp ? '' : LINK)) +
+      (t.repeat > 1 ? '<span class="n">' + (stp ? 'stopped' : (i + 1) + '/' + t.repeat) + '</span>' : (i === 0 ? '<span class="tm">' + durTx(t.dur) + '</span>' : '')) + '</div>';
+  }
+  return h + (cas ? '' : '<span class="rs"></span>') + '</div>';
+}
+function render(){
+  resolve(); renderGroups();
+  var bad = clashes(), rows = visibleRoutes(), P = PPH;
+  $('#gantt').style.setProperty('--pph', P);
+  var h = [];
+  h.push('<div class="gr hd"><div class="gh"><span style="flex:1">Route</span><span style="width:128px">Crew type</span></div><div class="axis">');
+  var step = P < 30 ? 3 : P < 60 ? 2 : 1;
+  for (var x = 0; x < HOURS; x += step) h.push('<span class="' + (x % 6 === 0 ? 'major' : '') + '" style="left:' + (x * P) + 'px;width:' + (step * P) + 'px">+' + x + ' h</span>');
+  h.push('</div></div>');
+  if (!rows.length) h.push('<div class="empty"><b>No routes here</b>' + (group === 'In playbook' ? 'Set a crew type or add a route event and the route shows up here.' : 'Try another filter or clear the search.') + '</div>');
+  var tasksBy = {};
+  PB.tasks.forEach(function(t){ (tasksBy[t.routeId] = tasksBy[t.routeId] || []).push(t); });
+  var lastG = null;
+  rows.forEach(function(r){
+    if ((group === 'All' || group === 'In playbook') && r.group !== lastG) { lastG = r.group; h.push('<div class="gr grp"><div class="gh">' + esc(r.group) + ' routes</div><div></div></div>'); }
+    var c = crewOf(r.id);
+    h.push('<div class="gr" data-r="' + r.id + '"><div class="gh">' + mapSvg(r.id, 'thumb') + '<div class="rn"><b class="ell" title="' + esc(r.name) + '">' + esc(r.name) + '</b><span>' + r.km + ' km · ' + (avgHours(r.id) ? durTx(avgHours(r.id)) + ' avg' : '3 h default') + '</span></div>' +
+      '<select class="fi ' + (c === 'internal' ? 'int' : c === 'sub' ? 'sub' : '') + '" data-crew="' + r.id + '" aria-label="Crew type for ' + esc(r.name) + '"><option value="">Crew type…</option><option value="internal"' + (c === 'internal' ? ' selected' : '') + '>Internal</option><option value="sub"' + (c === 'sub' ? ' selected' : '') + '>Subcontracted</option></select></div>');
+    h.push('<div class="lane"><div class="ghost"></div>');
+    (tasksBy[r.id] || []).forEach(function(t){ h.push(blkHtml(t, r, bad)); });
+    h.push('</div></div>');
+  });
+  $('#gantt').innerHTML = h.join('');
+  var nInt = 0, nSub = 0; Object.keys(PB.crew).forEach(function(k){ if (PB.crew[k] === 'internal') nInt++; else if (PB.crew[k] === 'sub') nSub++; });
+  var open = PB.tasks.filter(function(t){ return !(t.who && t.vehicle); }).length, nb = Object.keys(bad).length;
+  var nRuns = PB.tasks.reduce(function(a, t){ return a + runs(t); }, 0), nCas = PB.tasks.reduce(function(a, t){ return a + (runs(t) - 1) + (t.cascade && prevOf(t) ? 1 : 0); }, 0);
+  var end = PB.tasks.reduce(function(m, t){ return Math.max(m, t.start + span(t)); }, 0);
+  $('#stats').innerHTML = '<span class="stat"><b>' + PB.tasks.length + '</b>route events · <b>' + nRuns + '</b>runs</span><span class="stat"><b>' + nCas + '</b>cascading</span><span class="stat"><b>' + nInt + '</b>internal · <b>' + nSub + '</b>sub routes</span><span class="stat"><b>' + open + '</b>not assigned</span>' + (nb ? '<span class="stat bad"><b>' + nb + '</b>double-booked</span>' : '') + '<span class="stat">Ends at <b>' + (end ? fmtH(end) : '–') + '</b></span>';
+  status();
+}
+
+// ---------- route event pane ----------
+function openTask(id){
+  sel = id; var t = task(); if (!t) return closePane();
+  resolve();
+  var r = IX.route[t.routeId], c = crewOf(r.id), num = routeNum(r), prev = prevOf(t), cas = t.cascade && prev;
+  var bad = clashes()[t.id], whoOpts = '', vehOpts = '';
+  if (c === 'internal') {
+    whoOpts = D.employees.filter(function(e){ return e.name; }).map(function(e){ return '<option value="E:' + esc(e.id) + '"' + (t.who === 'E:' + e.id ? ' selected' : '') + '>' + esc(e.name) + '</option>'; }).join('');
+    vehOpts = D.cityVehicles.slice().sort(function(a, b){ return ((num && b.homeNum === num) - (num && a.homeNum === num)) || String(a.id).localeCompare(String(b.id), undefined, {numeric:true}); })
+      .map(function(v){ return '<option value="C:' + esc(v.id) + '"' + (t.vehicle === 'C:' + v.id ? ' selected' : '') + '>Unit ' + esc(v.id) + (v.type ? ' · ' + esc(v.type) : '') + (num && v.homeNum === num ? ' · usually on this route' : '') + '</option>'; }).join('');
+  } else if (c === 'sub') {
+    var home = function(s){ return (IX.trucksBySub[s.id] || []).some(function(v){ return num && v.homeNum === num; }); };
+    whoOpts = D.subs.slice().sort(function(a, b){ return (home(b) - home(a)) || a.name.localeCompare(b.name); }).map(function(s){ return '<option value="S:' + esc(s.id) + '"' + (t.who === 'S:' + s.id ? ' selected' : '') + '>' + esc(s.name) + (home(s) ? ' · usually on this route' : '') + '</option>'; }).join('');
+    vehOpts = (t.who ? (IX.trucksBySub[t.who.slice(2)] || []) : []).map(function(v){ return '<option value="T:' + esc(v.id) + '"' + (t.vehicle === 'T:' + v.id ? ' selected' : '') + '>' + esc(v.reg) + (v.type ? ' · ' + esc(v.type) : '') + (num && v.homeNum === num ? ' · usually here' : '') + '</option>'; }).join('');
+  }
+  var startOpts = '', durOpts = '', repOpts = '', stopOpts = '';
+  for (var s = 0; s <= HOURS - SNAP; s += SNAP) startOpts += '<option value="' + s + '"' + (s === t.start ? ' selected' : '') + '>' + fmtH(s) + '</option>';
+  var avg = avgHours(t.routeId);
+  for (var d = SNAP; d <= 12; d += SNAP) durOpts += '<option value="' + d + '"' + (d === t.dur ? ' selected' : '') + '>' + durTx(d) + ((avg || DEFAULT_DUR) === d ? (avg ? ' (average)' : ' (default)') : '') + '</option>';
+  for (var n = 1; n <= MAX_REPEAT; n++) repOpts += '<option value="' + n + '"' + (n === t.repeat ? ' selected' : '') + '>' + (n === 1 ? 'Once' : n + ' times in a row') + '</option>';
+  stopOpts = '<option value="0">Keep going, all ' + t.repeat + ' runs</option>';
+  for (var k = 1; k < t.repeat; k++) stopOpts += '<option value="' + k + '"' + (k === t.stopAfter ? ' selected' : '') + '>Stop after run ' + k + '</option>';
+  var key = chainKey(t), who = t.who && t.who[0] === 'E' ? whoName(t.who) : vehName(t.vehicle);
+  // Only a driver's very first route event can't cascade; without a driver yet the box can be ticked ahead of time.
+  var firstForDriver = key && !prev;
+  var casText = firstForDriver ? 'This is ' + who + '’s first route event, so it starts at its own time.'
+    : !key ? 'Ticked ahead of time: it takes effect once a ' + (c === 'sub' ? 'truck' : 'driver') + ' is assigned and they have a route event before this one.'
+    : 'Starts as soon as ' + IX.route[prev.routeId].name + ' is done, so ' + who + ' is never pulled off an unfinished route and never waits for the next one.';
+  $('#pane').innerHTML =
+    '<div class="ph"><b class="ell">' + esc(r.name) + '</b><button class="ib" data-act="close" aria-label="Close">✕</button></div>' +
+    '<div class="pb">' +
+      '<div class="mapbox">' + mapSvg(r.id, '') + '<span class="cap">' + esc(r.name) + ' · ' + r.km + ' km</span></div>' +
+      '<div class="lf"><label>Route event</label><input class="fi" id="tTitle" value="' + esc(t.title) + '"></div>' +
+      '<div class="lf"><label>Crew type for this route</label><select class="fi" id="tCrew"><option value="">Choose…</option><option value="internal"' + (c === 'internal' ? ' selected' : '') + '>Internal (city crew)</option><option value="sub"' + (c === 'sub' ? ' selected' : '') + '>Subcontracted</option></select></div>' +
+      (c === '' ? '<div class="note">Pick the crew type first. Internal routes take a city employee and a city vehicle. Subcontracted routes take a contractor and one of their trucks.</div>' :
+      '<div class="two"><div class="lf"><label>' + (c === 'internal' ? 'Employee' : 'Contractor') + '</label><select class="fi" id="tWho"><option value="">Assign later</option>' + whoOpts + '</select></div>' +
+      '<div class="lf"><label>' + (c === 'internal' ? 'City vehicle' : 'Truck') + '</label><select class="fi" id="tVeh"' + (c === 'sub' && !t.who ? ' disabled' : '') + '><option value="">' + (c === 'sub' && !t.who ? 'Pick a contractor first' : 'Assign later') + '</option>' + vehOpts + '</select></div></div>') +
+      '<div class="sec">Timing</div>' +
+      '<div class="two"><div class="lf"><label>Repeat</label><select class="fi" id="tRep">' + repOpts + '</select></div>' +
+      '<div class="lf"><label>During the event</label><select class="fi" id="tStop"' + (t.repeat < 2 ? ' disabled' : '') + '>' + (t.repeat < 2 ? '<option>Nothing to stop</option>' : stopOpts) + '</select></div></div>' +
+      (t.repeat > 1 ? '<label class="ck"><input type="checkbox" checked disabled><div><b>Repeats cascade automatically</b><span>Runs 2 to ' + t.repeat + ' each start as soon as the run before is done. A supervisor can stop the remaining repeats during the snow event; set “During the event” to see the plan with fewer runs.</span></div></label>' : '') +
+      '<label class="ck' + (firstForDriver ? ' off' : '') + '"><input type="checkbox" id="tCas"' + (t.cascade && !firstForDriver ? ' checked' : '') + (firstForDriver ? ' disabled' : '') + '><div><b>Cascade from the previous route</b><span>' + esc(casText) + '</span></div></label>' +
+      '<div class="two"><div class="lf"><label>Starts</label>' + (cas ? '<select class="fi" disabled><option>When the previous route is done (' + fmtH(t.start) + ')</option></select>' : '<select class="fi" id="tStart">' + startOpts + '</select>') + '</div>' +
+      '<div class="lf"><label>Each run takes</label><select class="fi" id="tDur">' + durOpts + '</select></div></div>' +
+      '<div class="hint">' + (avg ? 'Set from the average of past route events on this route.' : 'No route events on this route yet, so each run uses the 3 h default. Once it has history, this is set from the average.') + '</div>' +
+      '<div class="sum"><span>' + fmtH(t.start) + ' → ' + fmtH(t.start + span(t)) + '</span><span>' + runs(t) + ' run' + (runs(t) > 1 ? 's' : '') + ' × ' + durTx(t.dur) + ' = ' + durTx(span(t)) + '</span>' + (t.stopAfter ? '<span>' + (t.repeat - t.stopAfter) + ' stopped</span>' : '') + '</div>' +
+      (t.start + planned(t) > HOURS ? '<div class="warn">This runs past the 36 h window.</div>' : '') +
+      (bad ? '<div class="warn">' + esc(bad) + '</div>' : '') +
+    '</div>' +
+    '<div class="pf"><button class="btn2" data-act="dup">Add the next route</button><button class="btn2" data-act="del" style="color:var(--rT)">Delete</button><span class="grow"></span><button class="btn" data-act="close">Done</button></div>';
+  $('#pane').classList.add('on');
+  render();
+}
+function closePane(){ sel = null; $('#pane').classList.remove('on'); render(); }
+
+function setCrew(routeId, v, after){
+  var ts = PB.tasks.filter(function(t){ return t.routeId === routeId && (t.who || t.vehicle); });
+  function go(){
+    if (v) PB.crew[routeId] = v; else delete PB.crew[routeId];
+    ts.forEach(function(t){ t.who = ''; t.vehicle = ''; });
+    markDirty(); render(); if (after) after();
+  }
+  if (ts.length && crewOf(routeId) !== v) confirmDlg('Change the crew type?', 'The ' + ts.length + ' assignment' + (ts.length > 1 ? 's' : '') + ' on this route will be cleared. Internal routes take city crews and subcontracted routes take contractors.', 'Change', go, function(){ render(); if (after) after(); });
+  else go();
+}
+function newTask(routeId, at){
+  var dur = avgHours(routeId) || DEFAULT_DUR;
+  var t = norm({id:uid(), routeId:routeId, start:Math.min(at, HOURS - dur), dur:dur, repeat:1, stopAfter:0, cascade:false, title:IX.route[routeId].name, who:'', vehicle:''});
+  PB.tasks.push(t); return t;
+}
+
+// ---------- drag, resize, create ----------
+var drag = null;
+function hourAt(lane, x){ return Math.max(0, Math.min(HOURS - SNAP, Math.floor((x - lane.getBoundingClientRect().left) / PPH / SNAP) * SNAP)); }
+function onDown(e){
+  if (e.button !== 0 || e.target.closest('select')) return;
+  var b = e.target.closest('.blk');
+  if (b) {
+    var t = PB.tasks.filter(function(x){ return x.id === b.dataset.t; })[0];
+    drag = {t:t, el:b, mode:e.target.classList.contains('rs') ? 'size' : 'move', x0:e.clientX, s0:t.start, d0:t.dur, moved:false, cas:t.cascade && prevOf(t)};
+    b.setPointerCapture(e.pointerId); b.classList.add('drag'); e.preventDefault(); return;
+  }
+  var lane = e.target.closest('.lane');
+  if (lane) { var t2 = newTask(lane.parentNode.dataset.r, hourAt(lane, e.clientX)); markDirty(); openTask(t2.id); }
+}
+function onMove(e){
+  if (!drag) {
+    var lane = e.target.closest && e.target.closest('.lane');
+    if (lane && !e.target.closest('.blk')) {
+      var g = lane.querySelector('.ghost'), at = hourAt(lane, e.clientX), d = avgHours(lane.parentNode.dataset.r) || DEFAULT_DUR;
+      g.style.left = (Math.min(at, HOURS - d) * PPH) + 'px'; g.style.width = (d * PPH - 2) + 'px'; g.textContent = '+ route event at ' + fmtH(Math.min(at, HOURS - d));
+    }
+    return;
+  }
+  var dh = Math.round((e.clientX - drag.x0) / PPH / SNAP) * SNAP;
+  if (dh === 0) return;
+  drag.moved = true;
+  if (drag.mode === 'move') {
+    if (drag.cas) return;   // a cascading event follows its previous route; untick cascade to move it
+    drag.t.start = Math.max(0, Math.min(HOURS - SNAP, drag.s0 + dh));
+  } else {
+    // stretching a repeated event changes each run, so the runs stay equal
+    drag.t.dur = Math.max(SNAP, snap((drag.d0 * drag.t.repeat + dh) / drag.t.repeat));
+  }
+  var r = IX.route[drag.t.routeId], tmp = document.createElement('div');
+  tmp.innerHTML = blkHtml(drag.t, r, {});
+  var nb = tmp.firstChild; nb.classList.add('drag'); drag.el.replaceWith(nb); drag.el = nb;
+}
+function onUp(){
+  if (!drag) return;
+  var d = drag; drag = null;
+  if (d.moved && d.mode === 'move' && d.cas) { toast('This event cascades: it starts when the previous route is done. Untick cascade to move it.'); render(); return; }
+  if (d.moved) { markDirty(); if (sel === d.t.id) openTask(d.t.id); else render(); }
+  else openTask(d.t.id);
+}
+
+// ---------- people & vehicles ----------
+function openPeople(){
+  sel = null; render();
+  var emp = D.employees.map(function(e, i){ return '<tr><td><input data-e="' + i + '" value="' + esc(e.name) + '" placeholder="Name"></td><td class="mut" style="font-size:11px;width:92px">' + (e.citycareId ? '✓ in Citycare' : 'not in Citycare') + '</td><td style="width:34px"><button class="ib" data-del-e="' + i + '" aria-label="Remove">✕</button></td></tr>'; }).join('');
+  var veh = D.cityVehicles.map(function(v, i){ return '<tr><td><input data-v="' + i + '" value="' + esc(v.id) + '" placeholder="Unit #"></td><td><input data-vt="' + i + '" value="' + esc(v.type) + '" placeholder="Type"></td><td><input data-vc="' + i + '" value="' + esc(v.citycareId || '') + '" placeholder="Citycare vehicle ID"></td><td style="width:34px"><button class="ib" data-del-v="' + i + '" aria-label="Remove">✕</button></td></tr>'; }).join('');
+  $('#pane').innerHTML = '<div class="ph"><b>People &amp; vehicles</b><button class="ib" data-act="close" aria-label="Close">✕</button></div><div class="pb">' +
+    '<div class="lf"><label>City employees (' + D.employees.length + ', StreetOps users active since fall 2024; ' + D.employees.filter(function(e){ return e.citycareId; }).length + ' have a Citycare account and can be assigned in the import)</label><table class="dt">' + emp + '</table><button class="btn2" data-act="addE">+ Add employee</button></div>' +
+    '<div class="lf"><label>City vehicles (' + D.cityVehicles.length + ', DPW units from StreetOps)</label><table class="dt">' + veh + '</table><button class="btn2" data-act="addV">+ Add vehicle</button></div>' +
+    '<div class="lf"><label>Contractors</label><div class="mut">' + D.subs.length + ' contractors with ' + D.subVehicles.length + ' approved plow trucks, from StreetOps.</div></div>' +
+    '</div><div class="pf"><span class="grow"></span><button class="btn" data-act="savePeople">Save list</button></div>';
+  $('#pane').classList.add('on');
+}
+
+// ---------- open / save ----------
+function fillOpen(){
+  $('#pbOpen').innerHTML = '<option value="">Open a playbook…</option>' + playbooks.slice().sort().map(function(n){ return '<option' + (n === savedName ? ' selected' : '') + '>' + esc(n) + '</option>'; }).join('');
+}
+function load(name){
+  call('getPlaybook', name).then(function(p){ p.tasks.forEach(norm); PB = p; PB.stormStart = PB.stormStart || defaultStart(); savedName = name; dirty = false; $('#pbName').value = name; $('#stormStart').value = PB.stormStart; group = 'In playbook'; closePane(); fillOpen(); try { localStorage.setItem('storm-playbook-last', name); } catch(e){} });
+}
+// A PNG of the route drawn from its shape, saved into the sheet next to each route event.
+function mapPng(routeId){
+  var p = MAPS[routeId]; if (!p || !window.Path2D) return '';
+  var c = document.createElement('canvas'), s = 1.25; c.width = c.height = 160 * s;
+  var g = c.getContext('2d'); g.fillStyle = '#EEF0EA'; g.fillRect(0, 0, c.width, c.height);
+  g.scale(s, s); g.strokeStyle = '#0072E5'; g.lineWidth = 2.4; g.lineCap = g.lineJoin = 'round'; g.stroke(new Path2D(p));
+  return c.toDataURL('image/png');
+}
+// ---------- Citycare task import ----------
+// Columns of the Citycare Tasks importer, in its order, then reference columns it ignores.
+var IMPORT_HEAD = ['Record ID','Status','Name','Description','Assigned To','Co Workers','Workspace','Priority','Task Status','Start On','End On','Location','Address','Type','Tags','Relates To','Refusal Reason'];
+var EXTRA_HEAD = ['Playbook','Route','Route Firestore ID','Crew type','Run','Of runs','Cascade','Start (h)','End (h)','Driver','Staff Firestore ID','Vehicle','Vehicle Firestore ID','Contractor'];
+// One importable route task per run: repeats become back-to-back tasks, each cascading from the run before.
+function importRuns(){
+  resolve();
+  var out = [];
+  PB.tasks.slice().sort(function(a, b){ return a.start - b.start || IX.route[a.routeId].name.localeCompare(IX.route[b.routeId].name, undefined, {numeric:true}); }).forEach(function(t){
+    var r = IX.route[t.routeId], c = crewOf(t.routeId), prev = t.cascade && prevOf(t), n = runs(t);
+    var emp = t.who && t.who[0] === 'E' ? IX.emp[t.who.slice(2)] : null, cv = t.vehicle && t.vehicle[0] === 'C' ? IX.cveh[t.vehicle.slice(2)] : null;
+    var staffId = emp && emp.citycareId || '', vehId = cv && cv.citycareId || '';
+    var truck = t.vehicle && t.vehicle[0] === 'T' ? IX.truck[t.vehicle.slice(2)] : null;
+    for (var i = 0; i < n; i++) {
+      var st = t.start + i * t.dur, cas = i > 0 || !!prev;
+      var desc = [
+        (PB.name || $('#pbName').value) ? (PB.name || $('#pbName').value) + ' playbook' : '',
+        n > 1 ? 'Run ' + (i + 1) + ' of ' + n : '',
+        cas ? 'Cascade: starts when ' + (i > 0 ? 'run ' + i + ' of ' + r.name : IX.route[prev.routeId].name) + ' is done' : '',
+        c === 'sub' ? 'Subcontractor: ' + whoName(t.who) + (truck ? ' · truck ' + truck.reg + (truck.type ? ' (' + truck.type + ')' : '') : '') : '',
+        c === 'internal' && t.who ? 'Driver: ' + whoName(t.who) + (staffId ? '' : ' (no Citycare account yet)') : '',
+        c === 'internal' && t.vehicle ? 'Vehicle: ' + vehName(t.vehicle) : ''
+      ].filter(Boolean).join(' · ');
+      out.push({
+        name:(t.title || r.name).slice(0, 30), description:desc.slice(0, 2000), assignedTo:staffId, workspace:D.workspace || 'PWX',
+        taskStatus:staffId ? 'assigned' : 'open', relatesTo:r.number || '', playbook:PB.name || $('#pbName').value, route:r.name, routeId:r.id,
+        crew:c === 'sub' ? 'Subcontracted' : c === 'internal' ? 'Internal' : '', run:i + 1, runs:n, cascade:cas ? 'TRUE' : 'FALSE',
+        startH:st, endH:st + t.dur, driver:c === 'internal' ? whoName(t.who) : '', staffId:staffId,
+        vehicle:vehName(t.vehicle), vehicleId:vehId, contractor:c === 'sub' ? whoName(t.who) : ''
+      });
+    }
+  });
+  return out;
+}
+function stamp(h){
+  var d = new Date(PB.stormStart); if (isNaN(d)) return '';
+  d = new Date(d.getTime() + h * 3600e3);
+  var p = function(n){ return String(n).padStart(2, '0'); };
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':00';
+}
+function importRow(x){
+  return ['', 'Active', x.name, x.description, x.assignedTo, '', x.workspace, '', x.taskStatus, stamp(x.startH), stamp(x.endH), '', '', '', '', x.relatesTo, '',
+    x.playbook, x.route, x.routeId, x.crew, x.run, x.runs, x.cascade, x.startH, x.endH, x.driver, x.staffId, x.vehicle, x.vehicleId, x.contractor];
+}
+function save(){
+  var name = $('#pbName').value.trim();
+  if (!name) { toast('Name the playbook first'); $('#pbName').focus(); return; }
+  if (name !== savedName && playbooks.indexOf(name) >= 0) { toast('Another playbook already has that name'); return; }
+  resolve(); PB.name = name;
+  // names travel with ids so the sheet reads on its own
+  var labels = {routes:{}, who:{}, veh:{}, maps:{}, after:{}, runs:importRuns()};
+  PB.tasks.forEach(function(t){
+    labels.routes[t.routeId] = IX.route[t.routeId].name;
+    if (!labels.maps[t.routeId]) labels.maps[t.routeId] = mapPng(t.routeId);
+    if (t.who) labels.who[t.who] = whoName(t.who); if (t.vehicle) labels.veh[t.vehicle] = vehName(t.vehicle);
+    var p = t.cascade && prevOf(t); if (p) labels.after[t.id] = IX.route[p.routeId].name;
+  });
+  Object.keys(PB.crew).forEach(function(k){ labels.routes[k] = IX.route[k].name; });
+  var b = $('#btnSave'); b.disabled = true; b.textContent = 'Saving…';
+  call('savePlaybook', PB, savedName, labels).then(function(list){
+    playbooks = list; savedName = name; dirty = false; fillOpen(); status(); toast(REMOTE ? 'Saved. Export the “Import: ' + name + '” tab as CSV for Citycare.' : 'Saved (local preview)');
+    try { localStorage.setItem('storm-playbook-last', name); } catch(e){}
+  }).catch(function(e){ confirmDlg('Save failed', String(e && e.message || e), 'OK', function(){}); }).then(function(){ b.disabled = false; b.textContent = 'Save playbook'; });
+}
+// Same rows as the sheet's "Import: <playbook>" tab, ready for the Citycare Tasks importer.
+function exportCsv(){
+  if (!PB.tasks.length) { toast('No route events to export yet'); return; }
+  var rows = [IMPORT_HEAD.concat(EXTRA_HEAD)].concat(importRuns().map(importRow));
+  var csv = rows.map(function(r){ return r.map(function(v){ v = String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(','); }).join('\r\n');
+  var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'})); a.download = 'Tasks_import_' + ($('#pbName').value || 'playbook').replace(/[^\w\- ]+/g, '') + '.csv'; document.body.appendChild(a); a.click(); a.remove();
+}
+
+// ---------- dialog ----------
+// Plain button clicks, no form submit: the Apps Script page frame blocks form submission.
+function openDlg(html, ok, cancel){
+  var d = $('#dlg'), f = $('#dlgForm'); f.innerHTML = html;
+  function finish(yes){
+    var inp = f.querySelector('input'), v = inp ? inp.value.trim() : null;
+    if (yes) ok(v); else if (cancel) cancel();   // run before close so selects in the dialog are still readable
+    d.close();
+  }
+  [].forEach.call(f.querySelectorAll('button[value]'), function(b){ b.type = 'button'; b.onclick = function(){ finish(b.value === 'ok'); }; });
+  f.onkeydown = function(e){ if (e.key === 'Enter' && e.target.tagName === 'INPUT') { e.preventDefault(); finish(true); } };
+  d.oncancel = function(e){ e.preventDefault(); finish(false); };
+  d.showModal(); var i = f.querySelector('input'); if (i) i.select();
+}
+function confirmDlg(title, text, okTx, fn, cancel){ openDlg('<h2>' + esc(title) + '</h2><p>' + esc(text) + '</p><div class="row"><button class="btn2" value="no">Cancel</button><button class="btn" value="ok">' + esc(okTx) + '</button></div>', fn, cancel); }
+function guard(fn){ if (!dirty) return fn(); confirmDlg('Discard unsaved changes?', 'This playbook has changes that are not saved to the sheet.', 'Discard', fn); }
+
+// ---------- wiring ----------
+function wire(){
+  var G = $('#gantt');
+  G.addEventListener('pointerdown', onDown);
+  document.addEventListener('pointermove', onMove);
+  document.addEventListener('pointerup', onUp);
+  G.addEventListener('change', function(e){ var s = e.target.closest('[data-crew]'); if (s) setCrew(s.dataset.crew, s.value, sel ? function(){ openTask(sel); } : null); });
+  $('#groups').onclick = function(e){ var b = e.target.closest('[data-g]'); if (b) { group = b.dataset.g; render(); $('#gwrap').scrollTop = 0; } };
+  $('#q').oninput = render;
+  $('#zoom').onclick = function(e){ var b = e.target.closest('button'); if (!b) return; [].forEach.call(this.children, function(x){ x.classList.toggle('on', x === b); }); PPH = b.dataset.z === 'fit' ? Math.max(16, Math.floor(($('#gwrap').clientWidth - 354) / HOURS)) : Number(b.dataset.z); render(); };
+  $('#pbName').oninput = markDirty;
+  $('#stormStart').onchange = function(){ PB.stormStart = this.value; markDirty(); };
+  $('#btnSave').onclick = save;
+  $('#btnCsv').onclick = exportCsv;
+  $('#btnPeople').onclick = openPeople;
+  $('#theme').onclick = function(e){ var b = e.target.closest('[data-th]'); if (b) setTheme(b.dataset.th); };
+  $('#btnNew').onclick = function(){ guard(function(){ openDlg('<h2>New playbook</h2><p>Name the scenario, for example “Major storm, 12 in+” or “Salt only”. Every route starts empty.</p><input class="fi" placeholder="Playbook name"><div class="row"><button class="btn2" value="no">Cancel</button><button class="btn" value="ok">Create</button></div>', function(v){ if (!v) return; if (playbooks.indexOf(v) >= 0) { toast('That name is taken'); return; } PB = blank(v); savedName = null; dirty = true; $('#pbName').value = v; $('#stormStart').value = PB.stormStart; group = 'Plow'; closePane(); fillOpen(); }); }); };
+  $('#pbOpen').onchange = function(){ var v = this.value, self = this; if (!v) return; guard(function(){ load(v); }); setTimeout(function(){ if (dirty) self.value = savedName || ''; }); };
+
+  var pane = $('#pane');
+  pane.addEventListener('click', function(e){
+    var de = e.target.closest('[data-del-e]'), dv = e.target.closest('[data-del-v]');
+    if (de) { D.employees.splice(+de.dataset.delE, 1); return openPeople(); }
+    if (dv) { D.cityVehicles.splice(+dv.dataset.delV, 1); return openPeople(); }
+    var a = e.target.closest('[data-act]'); if (!a) return;
+    var act = a.dataset.act, t = task();
+    if (act === 'close') closePane();
+    if (act === 'del' && t) { PB.tasks.splice(PB.tasks.indexOf(t), 1); markDirty(); closePane(); }
+    if (act === 'dup' && t) {
+      // the same driver's next route, cascading from this one; pick the route by dragging it or in the list
+      openDlg('<h2>Add the next route for this driver</h2><p>It cascades from ' + esc(IX.route[t.routeId].name) + ', so it starts as soon as that one is done.</p><select class="fi" id="nextRoute">' + D.routes.map(function(r){ return '<option value="' + r.id + '"' + (r.id === t.routeId ? ' selected' : '') + '>' + esc(r.name) + '</option>'; }).join('') + '</select><div class="row"><button class="btn2" value="no">Cancel</button><button class="btn" value="ok">Add</button></div>', function(){
+        var rid = $('#nextRoute').value;
+        if (crewOf(rid) !== crewOf(t.routeId)) { if (crewOf(t.routeId)) PB.crew[rid] = crewOf(t.routeId); }
+        var n = newTask(rid, Math.min(HOURS - SNAP, t.start + span(t)));
+        n.who = t.who; n.vehicle = t.vehicle; n.cascade = true;
+        markDirty(); openTask(n.id);
+      });
+    }
+    if (act === 'addE') { D.employees.push({id:'E' + Date.now().toString(36), name:''}); openPeople(); var ins = pane.querySelectorAll('[data-e]'); ins[ins.length - 1].focus(); }
+    if (act === 'addV') { D.cityVehicles.push({id:'', desc:'', type:'', homeNum:''}); openPeople(); var vs = pane.querySelectorAll('[data-v]'); vs[vs.length - 1].focus(); }
+    if (act === 'savePeople') {
+      D.employees = D.employees.filter(function(x){ return x.name.trim(); });
+      D.cityVehicles = D.cityVehicles.filter(function(x){ return String(x.id).trim(); });
+      index(); call('savePeople', {employees:D.employees, cityVehicles:D.cityVehicles}).then(function(){ toast('List saved'); closePane(); });
+    }
+  });
+  pane.addEventListener('input', function(e){
+    var el = e.target;
+    if (el.dataset.e !== undefined) D.employees[+el.dataset.e].name = el.value;
+    if (el.dataset.v !== undefined) D.cityVehicles[+el.dataset.v].id = el.value;
+    if (el.dataset.vt !== undefined) D.cityVehicles[+el.dataset.vt].type = el.value;
+    if (el.dataset.vc !== undefined) D.cityVehicles[+el.dataset.vc].citycareId = el.value.trim();
+    if (el.id === 'tTitle') { task().title = el.value; markDirty(); }
+  });
+  pane.addEventListener('change', function(e){
+    var t = task(), el = e.target; if (!t || el.id === 'tTitle') return;
+    if (el.id === 'tStart') t.start = Number(el.value);
+    if (el.id === 'tDur') t.dur = Number(el.value);
+    if (el.id === 'tRep') { t.repeat = Number(el.value); norm(t); }
+    if (el.id === 'tStop') t.stopAfter = Number(el.value);
+    if (el.id === 'tCas') t.cascade = el.checked;
+    if (el.id === 'tCrew') { setCrew(t.routeId, el.value, function(){ openTask(t.id); }); return; }
+    if (el.id === 'tWho') {
+      t.who = el.value; t.vehicle = '';
+      // a contractor with a single approved truck gets it right away
+      if (t.who && t.who[0] === 'S') { var ts = IX.trucksBySub[t.who.slice(2)] || []; if (ts.length === 1) t.vehicle = 'T:' + ts[0].id; }
+    }
+    if (el.id === 'tVeh') t.vehicle = el.value;
+    markDirty(); openTask(t.id);
+  });
+  document.addEventListener('keydown', function(e){
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); save(); }
+    if ($('#dlg').open) return;
+    if (e.key === 'Escape' && $('#pane').classList.contains('on')) closePane();
+    if ((e.key === 'Delete' || e.key === 'Backspace') && sel && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) { var t = task(); PB.tasks.splice(PB.tasks.indexOf(t), 1); markDirty(); closePane(); }
+  });
+  window.addEventListener('beforeunload', function(e){ if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+}
+
+// ---------- theme: light, dark, or follow the computer ----------
+function setTheme(th){
+  if (th === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', th);
+  [].forEach.call(document.querySelectorAll('#theme [data-th]'), function(b){ b.classList.toggle('on', b.dataset.th === th); });
+  try { localStorage.setItem('storm-playbook-theme', th); } catch(e){}
+}
+(function(){ var th = 'auto'; try { th = localStorage.getItem('storm-playbook-theme') || 'auto'; } catch(e){} setTheme(th); })();
+
+// ---------- boot ----------
+call('getBootstrap').then(function(d){
+  if (!d) throw new Error('The sheet sent back no data');
+  D = d; playbooks = d.playbooks || []; index(); wire();
+  var last = null; try { last = localStorage.getItem('storm-playbook-last'); } catch(e){}
+  PB = blank(''); $('#pbName').placeholder = 'Untitled playbook'; $('#stormStart').value = PB.stormStart;
+  fillOpen(); render(); $('#loading').remove();
+  if (last && playbooks.indexOf(last) >= 0) load(last);
+  // route shapes are large, so they arrive after the page is usable
+  if (REMOTE && !Object.keys(MAPS).length) call('maps').then(function(m){ MAPS = m || {}; render(); if (sel) openTask(sel); }).catch(function(){});
+}).catch(function(e){ $('#loading').textContent = 'Could not load: ' + (e && e.message || e); });
+})();
+</script>
+</body>
+</html>
