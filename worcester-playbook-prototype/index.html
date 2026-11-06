@@ -200,10 +200,11 @@ var CONF = (function(){
   location.hash.replace(/^#/, '').split('&').forEach(function(kv){ var i = kv.indexOf('='); if (i > 0) h[kv.slice(0, i)] = decodeURIComponent(kv.slice(i + 1)); });
   try { saved = JSON.parse(localStorage.getItem('storm-playbook-conf')) || {}; } catch(e){}
   var c = {api:h.api || saved.api || '', key:h.key || saved.key || ''};
-  if (h.api || h.key) { try { localStorage.setItem('storm-playbook-conf', JSON.stringify(c)); } catch(e){} history.replaceState(null, '', location.pathname + location.search); }
+  if ((h.api || h.key) && !window.DEMO_DATA) { try { localStorage.setItem('storm-playbook-conf', JSON.stringify(c)); } catch(e){} history.replaceState(null, '', location.pathname + location.search); }
   return c;
 })();
-var REMOTE = !!(CONF.api && CONF.key);
+// A copy with its data built in (preview, prototype) never talks to the sheet, even if this browser has a saved link.
+var REMOTE = !window.DEMO_DATA && !!(CONF.api && CONF.key);
 function call(fn){
   var args = [].slice.call(arguments, 1);
   if (!REMOTE) {

@@ -198,10 +198,11 @@ var CONF = (function(){
   location.hash.replace(/^#/, '').split('&').forEach(function(kv){ var i = kv.indexOf('='); if (i > 0) h[kv.slice(0, i)] = decodeURIComponent(kv.slice(i + 1)); });
   try { saved = JSON.parse(localStorage.getItem('storm-playbook-conf')) || {}; } catch(e){}
   var c = {api:h.api || saved.api || '', key:h.key || saved.key || ''};
-  if (h.api || h.key) { try { localStorage.setItem('storm-playbook-conf', JSON.stringify(c)); } catch(e){} history.replaceState(null, '', location.pathname + location.search); }
+  if ((h.api || h.key) && !window.DEMO_DATA) { try { localStorage.setItem('storm-playbook-conf', JSON.stringify(c)); } catch(e){} history.replaceState(null, '', location.pathname + location.search); }
   return c;
 })();
-var REMOTE = !!(CONF.api && CONF.key);
+// A copy with its data built in (preview, prototype) never talks to the sheet, even if this browser has a saved link.
+var REMOTE = !window.DEMO_DATA && !!(CONF.api && CONF.key);
 function call(fn){
   var args = [].slice.call(arguments, 1);
   if (!REMOTE) {
@@ -574,7 +575,16 @@ function exportCsv(){
   if (!PB.tasks.length) { toast('No route events to export yet'); return; }
   var rows = [IMPORT_HEAD.concat(EXTRA_HEAD)].concat(importRuns().map(importRow));
   var csv = rows.map(function(r){ return r.map(function(v){ v = String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(','); }).join('\r\n');
+  // Where downloads are blocked (the Claude artifact viewer), show the CSV to copy instead.
+  if (window.NO_DOWNLOADS) return showCsv(csv, rows.length - 1);
   var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'})); a.download = 'Tasks_import_' + ($('#pbName').value || 'playbook').replace(/[^\w\- ]+/g, '') + '.csv'; document.body.appendChild(a); a.click(); a.remove();
+}
+function showCsv(csv, n){
+  openDlg('<h2>Citycare import CSV</h2><p>' + n + ' task' + (n === 1 ? '' : 's') + '. Copy it into a .csv file and import it in Citycare as Tasks.</p><textarea id="csvOut" class="fi" readonly style="width:100%;height:220px;font:12px ui-monospace,monospace;white-space:pre">' + esc(csv) + '</textarea><div class="row"><button class="btn2" id="csvCopy" type="button">Copy</button><button class="btn" value="ok">Done</button></div>', function(){});
+  $('#csvCopy').onclick = function(){
+    var t = $('#csvOut');
+    try { navigator.clipboard.writeText(t.value).then(function(){ toast('Copied'); }, function(){ t.select(); toast('Press ⌘C to copy'); }); } catch(e){ t.select(); toast('Press ⌘C to copy'); }
+  };
 }
 
 // ---------- dialog ----------
