@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en-CA"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Vaughan Staff Activity by Business Unit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--font-anthropic-sans:'Nunito',system-ui,sans-serif;--font-anthropic-serif:'Nunito',system-ui,sans-serif;
+--color-fg:#16202c;--color-fg-muted:#5b6675;--color-bg:#f4f6f9;--color-panel:#ffffff;--color-border-line:#dfe4ea;--color-ok:#1a7f45;--color-warn:#b26a00;--color-bad:#c0392b;
+--cds-gap-xs:4px;--cds-gap-sm:8px;--cds-gap-md:12px;--cds-gap-lg:18px;--cds-gap-xl:28px;--cds-pad-sm:8px;--cds-pad-md:12px;--cds-pad-lg:16px;--cds-radius:12px;
+--cds-font-size-caption:12px;--cds-font-size-body:14px;--cds-font-size-heading:19px;--cds-font-size-title:28px;
+--cds-chart-grid:#e9edf2;--cds-chart-axis:#c3cad3;--cds-chart-reference:#0072E5;--cds-chart-muted:#9aa4b1;--cds-text-secondary:#5b6675;
+--cds-surface-popover:#fff;--cds-border:#dfe4ea;--cds-shadow-popover:0 6px 24px rgba(16,24,40,.14)}
+@media (prefers-color-scheme:dark){:root{--color-fg:#e8edf3;--color-fg-muted:#a3aebb;--color-bg:#0f1620;--color-panel:#17212d;--color-border-line:#2a3746;
+--cds-chart-grid:#223040;--cds-chart-axis:#3a4a5c;--cds-text-secondary:#a3aebb;--cds-surface-popover:#1d2936;--cds-border:#2a3746}}
+body{margin:0;background:var(--color-bg);color:var(--color-fg);font-family:var(--font-anthropic-sans)}
+.pg{max-width:1280px;margin:0 auto;padding:24px 16px 48px}
+.pg-bar{display:flex;align-items:center;gap:10px;margin-bottom:18px;font-weight:800;color:#0072E5}
+.pg-bar span{color:var(--color-fg-muted);font-weight:700}
+#gate{background:var(--color-panel);border:1px solid var(--color-border-line);border-radius:12px;padding:16px;margin:16px 0;color:var(--color-bad);font-weight:700}
+.dash-select{font:inherit;padding:7px 10px;border:1px solid var(--color-border-line);border-radius:8px;background:var(--color-panel);color:var(--color-fg);min-width:180px}
+
+#dash-root{--vr-gap:var(--cds-gap-lg)}
+.vr{font-family:var(--font-anthropic-sans);color:var(--color-fg);font-size:var(--cds-font-size-body)}
+.vr-head{display:flex;flex-wrap:wrap;gap:var(--cds-gap-lg);align-items:flex-end;justify-content:space-between;margin-bottom:var(--cds-gap-lg)}
+.vr-head-text{flex:1 1 420px;min-width:0}
+.vr-kicker{margin:0 0 4px;color:var(--color-fg-muted);font-size:var(--cds-font-size-caption);font-weight:700}
+.vr-title{margin:0;font-family:var(--font-anthropic-serif);font-weight:800;font-size:var(--cds-font-size-title);line-height:1.15}
+.vr-lede{margin:8px 0 0;color:var(--color-fg-muted);max-width:80ch;line-height:1.5}
+.vr-lede b{color:var(--color-fg)}
+.vr-ctl{display:flex;flex-wrap:wrap;gap:var(--cds-gap-md);align-items:flex-end}
+.vr-ctl label,.vr-lab{display:block;font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);font-weight:700;margin-bottom:4px}
+.vr-seg{display:inline-flex;border:1px solid var(--color-border-line);border-radius:999px;overflow:hidden;background:var(--color-panel)}
+.vr-seg button{font:inherit;font-weight:700;font-size:var(--cds-font-size-caption);border:0;background:transparent;color:var(--color-fg);padding:8px 14px;cursor:pointer;min-height:36px}
+.vr-seg button[aria-pressed="true"]{background:var(--color-fg);color:var(--color-bg)}
+.vr-seg button:focus-visible,.vr-tabs button:focus-visible,.vr-num:focus-visible{outline:3px solid var(--cds-chart-reference);outline-offset:2px}
+.vr-num{font:inherit;width:84px;padding:7px 10px;border:1px solid var(--color-border-line);border-radius:8px;background:var(--color-panel);color:var(--color-fg);font-variant-numeric:tabular-nums}
+.vr-tabs{display:flex;gap:4px;border-bottom:1px solid var(--color-border-line);margin:0 0 var(--cds-gap-lg);overflow-x:auto}
+.vr-tabs button{font:inherit;font-weight:700;border:0;background:transparent;color:var(--color-fg-muted);padding:10px 14px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.vr-tabs button[aria-selected="true"]{color:var(--color-fg);border-bottom-color:currentColor}
+.vr-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--cds-gap-md);margin-bottom:var(--cds-gap-xl)}
+.vr-kpi{background:var(--color-panel);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);padding:var(--cds-pad-md) var(--cds-pad-lg)}
+.vr-kpi b{display:block;font-family:var(--font-anthropic-serif);font-weight:800;font-size:28px;line-height:1.1;font-variant-numeric:tabular-nums}
+.vr-kpi span{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted)}
+.vr-sec{margin:0 0 calc(var(--cds-gap-xl) * 1.5)}
+.vr-sec>h2{margin:0 0 4px;font-size:var(--cds-font-size-heading);font-weight:800}
+.vr-sec>.vr-note{margin:0 0 var(--cds-gap-md);color:var(--color-fg-muted);max-width:85ch;line-height:1.5}
+.vr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:var(--cds-gap-md)}
+.vr-card{background:var(--color-panel);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);padding:var(--cds-pad-lg);min-width:0}
+.vr-card h3{margin:0 0 8px;font-size:var(--cds-font-size-body);font-weight:700}
+.vr-chart{position:relative;min-height:280px}
+.vr-chart.tall{min-height:360px}
+.vr-chart svg{display:block;width:100%;overflow:visible}
+.vr-chart text{fill:var(--cds-text-secondary);font-size:11px;font-family:var(--font-anthropic-sans)}
+.vr-chart .vr-axis path,.vr-chart .vr-axis line{stroke:var(--cds-chart-axis)}
+.vr-chart .vr-grid line{stroke:var(--cds-chart-grid)}
+.vr-tip{position:absolute;pointer-events:none;background:var(--cds-surface-popover);border:1px solid var(--cds-border);box-shadow:var(--cds-shadow-popover);border-radius:8px;padding:8px 10px;font-size:12px;color:var(--color-fg);max-width:240px;z-index:5;line-height:1.4}
+.vr-legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--color-fg-muted);margin-top:8px}
+.vr-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.vr-find{background:var(--color-panel);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);padding:var(--cds-pad-md) var(--cds-pad-lg);margin-top:var(--cds-gap-md);max-width:95ch;line-height:1.55}
+.vr-find::before{content:"Finding";display:inline-block;font-size:11px;font-weight:800;color:var(--color-bg);background:var(--color-fg);border-radius:999px;padding:1px 8px;margin-right:8px;vertical-align:1px}
+.vr-scroll{overflow-x:auto}
+.vr-table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+.vr-table th,.vr-table td{padding:7px 8px;border-bottom:1px solid var(--color-border-line);text-align:right;white-space:nowrap}
+.vr-table th{font-weight:700;color:var(--color-fg-muted);font-size:12px}
+.vr-table th:first-child,.vr-table td:first-child,.vr-table .l{text-align:left}
+.vr-table td.bad{color:var(--color-bad);font-weight:700}
+.vr-table td.ok{color:var(--color-ok);font-weight:700}
+.vr-tbox{max-height:460px;overflow:auto}
+.vr-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+.vr-heat{display:grid;gap:2px;font-size:11px}
+.vr-heat div{border-radius:3px;min-height:22px;display:flex;align-items:center;justify-content:center;color:var(--color-fg)}
+.vr-heat .lab{background:transparent;color:var(--color-fg-muted);justify-content:flex-end;padding-right:6px}
+.vr-details{margin-top:var(--cds-gap-xl);color:var(--color-fg-muted);line-height:1.55;max-width:95ch}
+.vr-details summary{cursor:pointer;font-weight:700;color:var(--color-fg)}
+.vr-details li{margin-bottom:6px}
+.vr-err{color:var(--color-bad);font-size:13px}
+.tg-ctl{margin:0 0 var(--cds-gap-md)}
+.tg-btn{font:inherit;font-weight:700;font-size:var(--cds-font-size-caption);border:1px solid var(--color-border-line);border-radius:999px;background:var(--color-panel);color:var(--color-fg);padding:8px 14px;cursor:pointer;min-height:36px}
+.tg-btn:focus-visible,.tg-click:focus-visible{outline:3px solid var(--cds-chart-reference);outline-offset:2px}
+.vr-table tr.tg-click{cursor:pointer}
+.vr-table tr.tg-click:hover td{background:var(--color-bg)}
+.tg-status{color:var(--color-bad);font-size:13px;margin:0 0 var(--cds-gap-md)}
+@media print{.vr-ctl,.vr-tabs{display:none}.vr-tab{break-before:page}.vr-card{break-inside:avoid}}
+
+.vr-tab{display:block}
+</style></head><body><div class="pg vr" id="dash-root">
+<div class="pg-bar">Citycare <span>· Baseline reports</span></div>
+<header class="vr-head" id="top"><div class="vr-head-text">
+<p class="vr-kicker">City of Vaughan · Citycare Public Works (PWX) · data as of 2026-11-26</p>
+<h1 class="vr-title">Staff activity by business unit</h1>
+<p class="vr-lede">Task time by tag, status and employee for any period, with each tag's business unit and object code from the Task to BU Translation Table.</p></div>
+<div class="vr-ctl" id="controls"><div><span class="vr-lab" id="scopeLab">Scope</span>
+<div class="vr-seg" role="group" aria-labelledby="scopeLab" id="scopeSeg"><button type="button" data-scope="ops" aria-pressed="true">Operations</button><button type="button" data-scope="all" aria-pressed="false">Include tests</button></div></div></div>
+</header>
+<p id="gate" hidden></p>
+<!-- ACTIVITY BY TAG -->
+<section class="vr-tab" id="tags">
+  <p class="vr-lede" id="tgIntro">Each task carries one business-unit tag (C.WIN winter, C.RDS road surface and drainage, C.CLN roadside and cleanliness, C.STY structures and safety, C.FLT fleet and yard, C.SUP supervision and support). Its business unit and object code come with it. Pick a period: every figure below counts only the time that fell inside it, so you can report by tag, status and employee for any week, pay period or month.</p>
+  <div class="vr-ctl tg-ctl" id="tgControls">
+    <div><label for="tgFrom">From</label><input class="vr-num tg-date" id="tgFrom" type="date" min="2025-01-01" max="2030-12-31"></div>
+    <div><label for="tgTo">To</label><input class="vr-num tg-date" id="tgTo" type="date" min="2025-01-01" max="2030-12-31"></div>
+    <div><span class="vr-lab" id="tgQuickLab">Quick period</span>
+      <div class="vr-seg" role="group" aria-labelledby="tgQuickLab" id="tgQuick">
+        <button type="button" data-q="7">Last 7 days</button><button type="button" data-q="14">Last 14 days</button><button type="button" data-q="month">This month</button><button type="button" data-q="lastmonth">Last month</button><button type="button" data-q="all">All</button>
+      </div></div>
+    <div><span class="vr-lab" id="tgBucketLab">Chart by</span>
+      <div class="vr-seg" role="group" aria-labelledby="tgBucketLab" id="tgBucket">
+        <button type="button" data-b="week" aria-pressed="true">Week</button><button type="button" data-b="2w" aria-pressed="false">2 weeks</button><button type="button" data-b="month" aria-pressed="false">Month</button>
+      </div></div>
+  </div>
+  <div class="vr-ctl tg-ctl" id="tgFilters">
+    <div><label for="tgGroup">Group</label>
+      <select class="dash-select" id="tgGroup"><option value="">All groups</option><option value="WIN">C.WIN Winter Operations</option><option value="RDS">C.RDS Road Surface &amp; Drainage</option><option value="CLN">C.CLN Roadside &amp; Cleanliness</option><option value="STY">C.STY Structures &amp; Safety</option><option value="FLT">C.FLT Fleet &amp; Yard</option><option value="SUP">C.SUP Supervision &amp; Support</option></select></div>
+    <div><label for="tgTag">Tag</label><select class="dash-select" id="tgTag" data-draw="tg_tag_opts" data-source="tag_catalog"></select></div>
+    <div><label for="tgPerson">Employee</label><select class="dash-select" id="tgPerson" data-draw="tg_person_opts" data-source="tag_time"></select></div>
+    <div><span class="vr-lab">&nbsp;</span><button type="button" class="tg-btn" id="tgReset">Clear filters</button></div>
+    <div><span class="vr-lab">&nbsp;</span><button type="button" class="tg-btn" id="tgExport">Export lines (CSV)</button></div>
+  </div>
+  <p class="tg-status" id="tgExportMsg" hidden>The export could not be saved here. You can still download the rows from Sources.</p>
+
+  <p class="vr-lede" id="tgLede">From <b data-draw="tg_from_txt">—</b> to <b data-draw="tg_to_txt">—</b>, <b data-draw="num" data-source="tg_kpi" data-field="tasks" data-row="0">—</b> tagged tasks were active, <b data-draw="num" data-source="tg_kpi" data-field="completed" data-row="0">—</b> were completed, and crews logged <b data-draw="num" data-source="tg_kpi" data-field="hands_on_h" data-row="0" data-fmt="h">—</b> hands-on (on route or in progress).</p>
+  <div class="vr-kpis" id="kpisTags">
+    <div class="vr-kpi"><b data-draw="num" data-source="tg_kpi" data-field="tasks" data-row="0">—</b><span>Tasks active in period</span></div>
+    <div class="vr-kpi"><b data-draw="num" data-source="tg_kpi" data-field="completed" data-row="0">—</b><span>Completed in period</span></div>
+    <div class="vr-kpi"><b data-draw="num" data-source="tg_kpi" data-field="will_not_do" data-row="0">—</b><span>Set aside (will not do)</span></div>
+    <div class="vr-kpi"><b data-draw="num" data-source="tg_kpi" data-field="hands_on_h" data-row="0" data-fmt="h">—</b><span>Hands-on hours</span></div>
+    <div class="vr-kpi"><b data-draw="num" data-source="tg_kpi" data-field="waiting_h" data-row="0" data-fmt="h">—</b><span>Waiting hours (open to accepted, paused, blocked)</span></div>
+    <div class="vr-kpi"><b data-draw="num" data-source="tg_kpi" data-field="people" data-row="0">—</b><span>Employees with tagged work</span></div>
+  </div>
+
+  <section class="vr-sec" id="sec-tagstatus">
+    <h2>Time in each status, by tag</h2>
+    <p class="vr-note">Hours a task spent in each status inside the period, added up per tag. Scheduled is the wait before a task's planned start, so it is kept apart from real waiting. Hands-on is On route plus In progress. Click a tag to filter the whole section.</p>
+    <div class="vr-card vr-scroll"><div class="vr-tbox">
+      <table class="vr-table" id="tTagStatus" data-source="tg_by_tag" data-row-key="tag">
+        <thead><tr><th data-field="tag">Tag</th><th data-field="business_unit">Business unit</th><th data-field="object_code">Object code</th><th data-field="tasks">Tasks</th><th data-field="completed">Completed</th><th data-field="will_not_do">Will not do</th><th data-field="scheduled_h">Scheduled h</th><th data-field="open_h">Open h</th><th data-field="assigned_h">Assigned h</th><th data-field="accepted_h">Accepted h</th><th data-field="on_route_h">On route h</th><th data-field="in_progress_h">In progress h</th><th data-field="other_h">Paused, blocked, planning h</th><th data-field="hands_on_h">Hands-on h</th><th data-field="waiting_h">Waiting h</th></tr></thead>
+        <tbody data-draw="tTagStatus"></tbody>
+      </table></div></div>
+  </section>
+
+  <section class="vr-sec" id="sec-tagtrend">
+    <h2>Hands-on hours and completions over time</h2>
+    <p class="vr-note">Each bar is one week, two weeks or month of the chosen period, split by tag group in the group's tag colour.</p>
+    <div class="vr-grid">
+      <div class="vr-card"><h3>Hands-on hours by group</h3><div class="vr-chart" id="chTagHours" data-source="tg_trend" data-draw="tg_trend_hours" aria-label="Hands-on hours per period by tag group"></div></div>
+      <div class="vr-card"><h3>Tasks completed by group</h3><div class="vr-chart" id="chTagDone" data-source="tg_trend" data-draw="tg_trend_done" aria-label="Tasks completed per period by tag group"></div></div>
+    </div>
+  </section>
+
+  <section class="vr-sec" id="sec-tagperson">
+    <h2>By employee</h2>
+    <p class="vr-note">The employee is whoever the task was assigned to while the time ran, so a task handed from one person to another splits its hours between them. Click a row to see that employee only; their tag lines below read like a statement for the period.</p>
+    <div class="vr-grid">
+      <div class="vr-card vr-scroll"><h3>Employee totals</h3><div class="vr-tbox">
+        <table class="vr-table" id="tTgPerson" data-source="tg_person" data-row-key="person">
+          <thead><tr><th data-field="person">Employee</th><th data-field="tags">Tags</th><th data-field="tasks">Tasks</th><th data-field="completed">Completed</th><th data-field="hands_on_h">Hands-on h</th><th data-field="waiting_h">Waiting h</th></tr></thead>
+          <tbody data-draw="tTgPerson"></tbody>
+        </table></div></div>
+      <div class="vr-card vr-scroll"><h3>Employee by tag</h3><div class="vr-tbox">
+        <table class="vr-table" id="tTgPersonTag" data-source="tg_person_tag" data-row-key="person,tag">
+          <thead><tr><th data-field="person">Employee</th><th data-field="tag">Tag</th><th data-field="business_unit">Business unit</th><th data-field="object_code">Object code</th><th data-field="tasks">Tasks</th><th data-field="completed">Completed</th><th data-field="hands_on_h">Hands-on h</th><th data-field="waiting_h">Waiting h</th></tr></thead>
+          <tbody data-draw="tTgPersonTag"></tbody>
+        </table></div></div>
+    </div>
+  </section>
+
+  <section class="vr-sec" id="sec-taglines">
+    <h2>Task lines</h2>
+    <p class="vr-note">One line per task and employee in the period, newest first, with the hours it spent in each status. Export lines saves every line with its business unit and object code as a CSV file for payroll or costing.</p>
+    <div class="vr-card vr-scroll"><div class="vr-tbox">
+      <table class="vr-table" id="tTgLines" data-source="tg_lines" data-row-key="task_id,person">
+        <thead><tr><th data-field="task_id">Task</th><th data-field="title">Title</th><th data-field="tag">Tag</th><th data-field="business_unit">Business unit</th><th data-field="object_code">Object code</th><th data-field="person">Employee</th><th data-field="status_now">Status now</th><th data-field="last_change">Last change</th><th data-field="hands_on_h">Hands-on h</th><th data-field="waiting_h">Waiting h</th><th data-field="scheduled_h">Scheduled h</th></tr></thead>
+        <tbody data-draw="tTgLines"></tbody>
+      </table></div></div>
+    <p class="vr-find" id="fTags">In this period, <span data-draw="num" data-source="tg_kpi" data-field="untagged" data-row="0">—</span> active tasks have no tag. Tasks created from now on need a tag picked in Citycare to show up here; the existing ones were tagged by Baseline from their title, type and route on 26 November 2026.</p>
+  </section>
+
+  <details class="vr-details" id="tgMethod">
+    <summary>How the tag figures are worked out</summary>
+    <ul>
+      <li>Status history comes from each task's change log in Citycare: every status change and reassignment is timestamped, so each stretch of time is counted under the status it was in and the person it was assigned to.</li>
+      <li>Only time inside the chosen dates counts, from the start of the first day to the end of the last, in your browser's time zone. A task still open counts up to the time of the export.</li>
+      <li>Hands-on is On route plus In progress. Waiting is Open, Assigned, Accepted, Paused, Blocked, Planning and Backlog. Scheduled is the time between a task's creation and its planned start, as with route patrols created ahead.</li>
+      <li>Hours are elapsed time between status changes, not timesheet hours. A crew that leaves a task In progress over lunch counts the lunch.</li>
+      <li>Tests and pilots are left out unless Include tests is on at the top of the page.</li>
+      <li>Tags on existing tasks were set by Baseline on 26 November 2026: patrol routes and blocks are C.SUP Rd Ptrl, potholes and AI pothole detections C.RDS Rd Plt Mtce, trip edges C.STY Crb Sdwlk Mtce, signs C.STY Sgn Mtce, debris C.CLN Litr, sweeping C.CLN Swpng. Changing a task's tag in Citycare changes it here at the next export.</li>
+    </ul>
+  </details>
+</section>
+
+</div>
+
+<script>
+(function(){let params={};const calcs={},draws=[],onD=[];let DATA=null,STATUS='loading',cache=new Map();
+const val=id=>{if(DATA&&DATA[id])return DATA[id];if(cache.has(id))return cache.get(id);const c=calcs[id];if(!c)return [];const v=c.fn(...c.inputs.map(val));cache.set(id,v);return v;};
+function run(){cache=new Map();onD.forEach(f=>{try{f()}catch(e){console.error(e)}});draws.forEach(([n,f])=>document.querySelectorAll('[data-draw="'+n+'"]').forEach(el=>{try{f(el)}catch(e){console.error('draw '+n,e)}}));}
+let t=null;const later=()=>{clearTimeout(t);t=setTimeout(run,0);};
+window.dash={colors:['#0072E5','#2E9E44','#E07B00','#7C4DFF','#D64545','#0891B2','#8B5E34','#6B7280'],params:()=>params,calc:(id,o)=>{calcs[id]=o},
+ data:id=>STATUS==='ok'?{status:'ok',data:val(id)}:{status:STATUS,data:[]},draw:(n,f)=>{draws.push([n,f])},onData:f=>{onD.push(f)},
+ setParams:o=>{params={...params,...o};Object.keys(params).forEach(k=>params[k]==null&&delete params[k]);later();},setLink:()=>{},resetParams:()=>{params={};later();}};
+window.claude={use:async n=>n==='downloads'?{save:async({filename,data})=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'text/csv'}));a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);}}:null};
+window.VR={};
+const b64u=s=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')+'==='.slice((s.length+3)%4)),c=>c.charCodeAt(0));
+async function load(){const m=/(?:^|[#&])k=([A-Za-z0-9_-]{43})/.exec(location.hash);const gate=document.getElementById('gate');
+  if(!m){STATUS='error';gate.textContent='This report needs the full link, including the part after #. Ask Baseline for the link.';gate.hidden=false;run();return;}
+  try{const buf=new Uint8Array(await (await fetch('data.bin',{cache:'no-store'})).arrayBuffer());
+    const key=await crypto.subtle.importKey('raw',b64u(m[1]),'AES-GCM',false,['decrypt']);
+    const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:buf.slice(0,12)},key,buf.slice(12));
+    const txt=await new Response(new Blob([plain]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+    DATA=JSON.parse(txt);STATUS='ok';}catch(e){STATUS='error';gate.textContent='This link could not open the report. Check that you copied the whole link.';gate.hidden=false;}
+  run();}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('#scopeSeg button').forEach(b=>b.addEventListener('click',()=>{dash.setParams({scope:b.dataset.scope});document.querySelectorAll('#scopeSeg button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));}));load();});
+})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+(function(){const V=window.VR;
+const col=i=>dash.colors[i%dash.colors.length];
+const fmtNum=(v,f)=>{if(v==null||v===''||(typeof v==='number'&&isNaN(v)))return '—';
+  switch(f){case 'money':return '$'+d3.format(',.0f')(v);case 'money2':return '$'+d3.format(',.2f')(v);case 'pct':return v+'%';case 'pct1':return d3.format('.1f')(v)+'%';
+  case 'h':return d3.format(',.1f')(v)+' h';case 'km':return d3.format(',.0f')(v)+' km';default:return typeof v==='number'?d3.format(',')(v):String(v);}};
+V.fmtNum=fmtNum;
+const rowOf=(el,d)=>{if(el.dataset.row!=null)return d[+el.dataset.row];const w=el.dataset.where;if(!w)return null;
+  const [k,val]=w.split('=').map(decodeURIComponent);return d.find(r=>String(r[k])===val);};
+const unskel=el=>el.classList.remove('dash-skeleton');
+
+dash.draw('num',el=>{const s=dash.data(el.dataset.source);
+  if(s.status!=='ok'){el.textContent='—';return;}
+  const r=rowOf(el,s.data||[]);el.textContent=r?fmtNum(r[el.dataset.field],el.dataset.fmt):'—';});
+const dayFmt=d=>d?d3.utcFormat('%-d %b %Y')(new Date(d+'T00:00:00Z')):'—';
+dash.draw('span_from',el=>{const s=dash.data('kpi');el.textContent=s.status==='ok'&&s.data[0]?dayFmt(s.data[0].first_day):'—';});
+dash.draw('span_to',el=>{const s=dash.data('kpi');el.textContent=s.status==='ok'&&s.data[0]?dayFmt(s.data[0].last_day):'—';});
+
+function msg(el,s){el.replaceChildren();const p=document.createElement('p');p.className=s.status==='error'?'vr-err':'';
+  p.textContent=s.status==='error'?'This chart could not load.':'—';el.appendChild(p);}
+function tipFor(el){const t=document.createElement('div');t.className='vr-tip';t.hidden=true;el.appendChild(t);
+  return {show(ev,lines){t.replaceChildren(...lines.map((l,i)=>{const d=document.createElement('div');if(i===0)d.style.fontWeight='700';d.textContent=l;return d;}));
+    t.hidden=false;const b=el.getBoundingClientRect();let x=ev.clientX-b.left+12,y=ev.clientY-b.top+12;
+    if(x+t.offsetWidth>b.width)x=Math.max(0,ev.clientX-b.left-t.offsetWidth-12);t.style.left=x+'px';t.style.top=y+'px';},hide(){t.hidden=true;}};}
+function legend(el,items){const L=document.createElement('div');L.className='vr-legend';
+  items.forEach(([name,c])=>{const s=document.createElement('span');const i=document.createElement('i');i.style.background=c;s.append(i,document.createTextNode(name));L.appendChild(s);});el.appendChild(L);}
+
+// stacked vertical bars: rows {x, category, n}
+function stacked(el,rows,{cats,colorOf,xLabel=x=>x,yFmt=d3.format(','),unit='',height=260}){
+  el.replaceChildren();
+  const xs=Array.from(new Set(rows.map(r=>r.x))).sort();
+  const used=cats.filter(c=>rows.some(r=>r.category===c));
+  const wide=xs.map(x=>{const o={x};used.forEach(c=>o[c]=d3.sum(rows.filter(r=>r.x===x&&r.category===c),r=>r.n));return o;});
+  const W=el.clientWidth||600,M={t:10,r:8,b:28,l:48},H=height;
+  const ser=d3.stack().keys(used)(wide);
+  const x=d3.scaleBand().domain(xs).range([M.l,W-M.r]).padding(0.25);
+  const y=d3.scaleLinear().domain([0,d3.max(wide,d=>d3.sum(used,c=>d[c]))||1]).nice().range([H-M.b,M.t]);
+  const svg=d3.select(el).append('svg').attr('viewBox',`0 0 ${W} ${H}`).attr('height',H).attr('role','img').attr('aria-label',el.getAttribute('aria-label')||'Stacked bar chart');
+  svg.append('g').attr('class','vr-grid').attr('transform',`translate(${M.l},0)`).call(d3.axisLeft(y).ticks(5).tickSize(-(W-M.l-M.r)).tickFormat('')).call(g=>g.select('.domain').remove());
+  svg.append('g').attr('class','vr-axis').attr('transform',`translate(${M.l},0)`).call(d3.axisLeft(y).ticks(5).tickFormat(yFmt));
+  const step=Math.ceil(xs.length/Math.max(1,Math.floor((W-M.l)/70)));
+  svg.append('g').attr('class','vr-axis').attr('transform',`translate(0,${H-M.b})`).call(d3.axisBottom(x).tickValues(xs.filter((d,i)=>i%step===0)).tickFormat(xLabel));
+  const tip=tipFor(el);
+  svg.append('g').selectAll('g').data(ser).join('g').style('fill',d=>colorOf(d.key)).selectAll('rect').data(d=>d.map(v=>Object.assign(v,{key:d.key}))).join('rect')
+    .attr('x',d=>x(d.data.x)).attr('width',x.bandwidth()).attr('y',d=>y(d[1])).attr('height',d=>Math.max(0,y(d[0])-y(d[1])))
+    .on('pointermove',(ev,d)=>tip.show(ev,[xLabel(d.data.x),d.key+': '+yFmt(d[1]-d[0])+unit,'Total: '+yFmt(d3.sum(used,c=>d.data[c]))+unit])).on('pointerleave',()=>tip.hide());
+  legend(el,used.map(c=>[c,colorOf(c)]));
+}
+V.stacked=stacked;
+const wk=d=>d3.utcFormat('%-d %b')(new Date(d+'T00:00:00Z'));
+const catColor=c=>col(V.CI[c]??7);
+
+})();
+</script>
+<script>
+(function(){
+const V=window.VR||{};
+const HANDS=['On route','In progress'], WAIT=['Open','Assigned','Accepted','Paused','Blocked','Planning','Backlog'], OTHER=['Paused','Blocked','Planning','Backlog'];
+const GNAME={WIN:'C.WIN Winter Operations',RDS:'C.RDS Road Surface & Drainage',CLN:'C.CLN Roadside & Cleanliness',STY:'C.STY Structures & Safety',FLT:'C.FLT Fleet & Yard',SUP:'C.SUP Supervision & Support','—':'Untagged'};
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const parseDay=s=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||'');return m?new Date(+m[1],+m[2]-1,+m[3]):null;};
+const r1=v=>Math.round(v*10)/10;
+
+// The period in force: the chosen dates, or the whole history up to the export.
+function period(cat,time){
+  const p=dash.params();
+  const asOf=cat.length&&cat[0].as_of?new Date(cat[0].as_of):new Date();
+  let first=null;time.forEach(r=>{if(!r.is_test){const f=new Date(r.from);if(!first||f<first)first=f;}});
+  first=first||new Date(asOf.getTime()-30*864e5);
+  const f=parseDay(p.tg_from)||new Date(first.getFullYear(),first.getMonth(),first.getDate());
+  const tD=parseDay(p.tg_to)||new Date(asOf.getFullYear(),asOf.getMonth(),asOf.getDate());
+  const P0=f.getTime(), P1=new Date(tD.getFullYear(),tD.getMonth(),tD.getDate()+1).getTime();
+  return {P0,P1,asOf:asOf.getTime(),from:ymd(f),to:ymd(tD),first:ymd(first),asOfDay:ymd(asOf)};
+}
+window.TGperiod=period;
+
+dash.calc('tg_seg',{inputs:['tag_time','tag_catalog'],title:'Status time inside the period',
+description:'Each stretch of time a task spent in one status with one assignee, cut to the chosen dates and filters.',
+fn:(time,cat)=>{
+  const p=dash.params(), all=p.scope==='all', pr=period(cat,time);
+  const grp=p.tg_group||'', tag=p.tg_tag||'', who=p.tg_person||'';
+  const out=[];
+  time.forEach(r=>{
+    if(r.is_test&&!all)return;
+    if(grp&&r.group!==grp)return; if(tag&&r.tag!==tag)return; if(who&&r.person!==who)return;
+    const f=new Date(r.from).getTime(), t=r.to?new Date(r.to).getTime():pr.asOf;
+    if(r.hours===0){ if(f>=pr.P0&&f<pr.P1)out.push({task_id:r.task_id,tag:r.tag,group:r.group,status:r.status,person:r.person,from:f,to:f,hours:0,event:1});return;}
+    const a=Math.max(f,pr.P0), b=Math.min(t,pr.P1);
+    if(b>a)out.push({task_id:r.task_id,tag:r.tag,group:r.group,status:r.status,person:r.person,from:a,to:b,hours:(b-a)/36e5,event:0});
+  });
+  return out;}});
+
+const sumBy=(rows,list)=>rows.filter(r=>list.includes(r.status)).reduce((s,r)=>s+r.hours,0);
+const done=rows=>new Set(rows.filter(r=>r.event&&r.status==='Completed').map(r=>r.task_id)).size;
+const wnd=rows=>new Set(rows.filter(r=>r.event&&r.status==='Will not do').map(r=>r.task_id)).size;
+
+dash.calc('tg_kpi',{inputs:['tg_seg'],title:'Tag activity totals',description:'Tasks, completions and hours inside the chosen period and filters.',
+fn:(seg)=>{const tagged=seg.filter(r=>r.tag!=='Untagged');
+  return [{tasks:new Set(tagged.map(r=>r.task_id)).size,completed:done(tagged),will_not_do:wnd(tagged),
+    hands_on_h:r1(sumBy(tagged,HANDS)),waiting_h:r1(sumBy(tagged,WAIT)),
+    people:new Set(tagged.filter(r=>!['Unassigned','Former member','Unnamed account'].includes(r.person)).map(r=>r.person)).size,
+    untagged:new Set(seg.filter(r=>r.tag==='Untagged').map(r=>r.task_id)).size}];}});
+
+dash.calc('tg_by_tag',{inputs:['tg_seg','tag_catalog'],title:'Hours by tag and status',description:'Hours in each status inside the period, per tag, with its business unit and object code.',
+fn:(seg,cat)=>{const by=d3.group(seg,r=>r.tag);const meta=new Map(cat.map(c=>[c.tag,c]));
+  const order=t=>(meta.get(t)||{order:9999}).order;
+  return Array.from(by,([tag,rows])=>{const m=meta.get(tag)||{};const h=s=>r1(sumBy(rows,[s]));
+    return {tag,business_unit:m.business_unit||'',object_code:m.object_code||'',tasks:new Set(rows.map(r=>r.task_id)).size,completed:done(rows),will_not_do:wnd(rows),
+      scheduled_h:h('Scheduled'),open_h:h('Open'),assigned_h:h('Assigned'),accepted_h:h('Accepted'),on_route_h:h('On route'),in_progress_h:h('In progress'),
+      other_h:r1(sumBy(rows,OTHER)),hands_on_h:r1(sumBy(rows,HANDS)),waiting_h:r1(sumBy(rows,WAIT))};}).sort((a,b)=>order(a.tag)-order(b.tag));}});
+
+dash.calc('tg_person',{inputs:['tg_seg'],title:'Hours by employee',description:'Per employee: tags worked, tasks, completions and hours inside the period.',
+fn:(seg)=>Array.from(d3.group(seg.filter(r=>r.tag!=='Untagged'),r=>r.person),([person,rows])=>({person,tags:new Set(rows.map(r=>r.tag)).size,
+  tasks:new Set(rows.map(r=>r.task_id)).size,completed:done(rows),hands_on_h:r1(sumBy(rows,HANDS)),waiting_h:r1(sumBy(rows,WAIT))}))
+  .sort((a,b)=>b.hands_on_h-a.hands_on_h||b.tasks-a.tasks)});
+
+dash.calc('tg_person_tag',{inputs:['tg_seg','tag_catalog'],title:'Hours by employee and tag',description:'Per employee and tag, with business unit and object code, inside the period.',
+fn:(seg,cat)=>{const meta=new Map(cat.map(c=>[c.tag,c]));const out=[];
+  d3.group(seg.filter(r=>r.tag!=='Untagged'),r=>r.person,r=>r.tag).forEach((byTag,person)=>byTag.forEach((rows,tag)=>{const m=meta.get(tag)||{};
+    out.push({person,tag,business_unit:m.business_unit||'',object_code:m.object_code||'',tasks:new Set(rows.map(r=>r.task_id)).size,completed:done(rows),
+      hands_on_h:r1(sumBy(rows,HANDS)),waiting_h:r1(sumBy(rows,WAIT)),order:m.order||9999});}));
+  return out.sort((a,b)=>d3.ascending(a.person,b.person)||a.order-b.order).map(({order,...r})=>r);}});
+
+dash.calc('tg_lines',{inputs:['tg_seg','tag_tasks','tag_catalog'],title:'Task lines',description:'One line per task and employee inside the period, with hours by status.',
+fn:(seg,tasks,cat)=>{const tk=new Map(tasks.map(t=>[t.task_id,t]));const meta=new Map(cat.map(c=>[c.tag,c]));const out=[];
+  d3.group(seg,r=>r.task_id,r=>r.person).forEach((byP,task_id)=>byP.forEach((rows,person)=>{const t=tk.get(task_id)||{};const m=meta.get(rows[0].tag)||{};
+    const h=s=>r1(sumBy(rows,[s]));
+    out.push({task_id,title:t.title||'',tag:rows[0].tag,business_unit:m.business_unit||'',object_code:m.object_code||'',person,status_now:t.status_now||'',
+      last_change:ymd(new Date(d3.max(rows,r=>r.to))),hands_on_h:r1(sumBy(rows,HANDS)),waiting_h:r1(sumBy(rows,WAIT)),scheduled_h:h('Scheduled'),
+      open_h:h('Open'),assigned_h:h('Assigned'),accepted_h:h('Accepted'),on_route_h:h('On route'),in_progress_h:h('In progress'),other_h:r1(sumBy(rows,OTHER)),
+      completed:rows.some(r=>r.event&&r.status==='Completed')?1:0,will_not_do:rows.some(r=>r.event&&r.status==='Will not do')?1:0});}));
+  return out.sort((a,b)=>d3.descending(a.last_change,b.last_change)||d3.ascending(a.task_id,b.task_id));}});
+
+function bucketStart(ms,kind){const d=new Date(ms);
+  if(kind==='month')return new Date(d.getFullYear(),d.getMonth(),1).getTime();
+  const mon=new Date(d.getFullYear(),d.getMonth(),d.getDate()-((d.getDay()+6)%7));
+  if(kind==='2w'){const anchor=new Date(2026,0,5).getTime();const k=Math.floor(Math.round((mon.getTime()-anchor)/864e5)/14);return new Date(2026,0,5+14*k).getTime();}
+  return mon.getTime();}
+function nextBucket(ms,kind){const d=new Date(ms);return kind==='month'?new Date(d.getFullYear(),d.getMonth()+1,1).getTime():new Date(d.getFullYear(),d.getMonth(),d.getDate()+(kind==='2w'?14:7)).getTime();}
+
+dash.calc('tg_trend',{inputs:['tg_seg'],title:'Hands-on hours and completions per period',description:'Hands-on hours and completed tasks per week, two weeks or month, by tag group.',
+fn:(seg)=>{const kind=dash.params().tg_bucket||'week';const acc=new Map();
+  const add=(b,g,k,v)=>{const key=b+'|'+g;const o=acc.get(key)||{x:ymd(new Date(b)),group:GNAME[g]||g,hours:0,done:0};o[k]+=v;acc.set(key,o);};
+  seg.forEach(r=>{if(r.tag==='Untagged')return;
+    if(r.event){if(r.status==='Completed')add(bucketStart(r.from,kind),r.group,'done',1);return;}
+    if(!HANDS.includes(r.status))return;
+    for(let b=bucketStart(r.from,kind);b<r.to;b=nextBucket(b,kind)){const e=nextBucket(b,kind);const ov=Math.min(r.to,e)-Math.max(r.from,b);if(ov>0)add(b,r.group,'hours',ov/36e5);}});
+  return Array.from(acc.values()).map(o=>({...o,hours:r1(o.hours)})).sort((a,b)=>d3.ascending(a.x,b.x));}});
+
+// ---------- drawings ----------
+const fmt=(v,f)=>(V.fmtNum?V.fmtNum(v,f):String(v));
+const colorOfTag=new Map();
+const tagColor=t=>colorOfTag.get(t)||'var(--cds-chart-muted)';
+const groupColor=g=>{for(const [t,c] of colorOfTag){if(GNAME[t.slice(2,5)]===g)return c;}return 'var(--cds-chart-muted)';};
+function loadColors(){const c=dash.data('tag_catalog');if(c.status==='ok')c.data.forEach(r=>colorOfTag.set(r.tag,r.color));}
+const enc=encodeURIComponent;
+
+function table(tb,src,cols,keyCols,onRow){tb.replaceChildren();loadColors();const s=dash.data(src);
+  if(s.status!=='ok'){const tr=tb.insertRow();const td=tr.insertCell();td.colSpan=cols.length;td.className='l'+(s.status==='error'?' vr-err':'');td.textContent=s.status==='error'?'This table could not load.':'—';return;}
+  if(!s.data.length){const tr=tb.insertRow();const td=tr.insertCell();td.colSpan=cols.length;td.className='l';td.textContent='Nothing in this period with these filters.';return;}
+  s.data.forEach(r=>{const tr=tb.insertRow();tr.dataset.key=keyCols.map(k=>enc(String(r[k]))).join(',');
+    if(onRow){tr.classList.add('tg-click');tr.tabIndex=0;tr.addEventListener('click',()=>onRow(r));tr.addEventListener('keydown',e=>{if(e.key==='Enter')onRow(r);});}
+    cols.forEach(([f,fm,cls])=>{const td=tr.insertCell();
+      if(f==='tag'){const dot=document.createElement('span');dot.className='vr-dot';dot.style.background=tagColor(r[f]);td.append(dot,document.createTextNode(r[f]));td.className='l';}
+      else{td.textContent=fm==='h'?(r[f]?d3.format(',.1f')(r[f]):'0'):fmt(r[f],fm);if(cls)td.className=cls;}});});}
+
+const setP=o=>dash.setParams(o);
+dash.draw('tTagStatus',tb=>table(tb,'tg_by_tag',[['tag'],['business_unit',null,'l'],['object_code',null,'l'],['tasks'],['completed'],['will_not_do'],['scheduled_h','h'],['open_h','h'],['assigned_h','h'],['accepted_h','h'],['on_route_h','h'],['in_progress_h','h'],['other_h','h'],['hands_on_h','h'],['waiting_h','h']],['tag'],r=>{if(r.tag!=='Untagged')setP({tg_tag:dash.params().tg_tag===r.tag?null:r.tag});}));
+dash.draw('tTgPerson',tb=>table(tb,'tg_person',[['person',null,'l'],['tags'],['tasks'],['completed'],['hands_on_h','h'],['waiting_h','h']],['person'],r=>setP({tg_person:dash.params().tg_person===r.person?null:r.person})));
+dash.draw('tTgPersonTag',tb=>table(tb,'tg_person_tag',[['person',null,'l'],['tag'],['business_unit',null,'l'],['object_code',null,'l'],['tasks'],['completed'],['hands_on_h','h'],['waiting_h','h']],['person','tag'],r=>setP({tg_person:r.person,tg_tag:r.tag})));
+dash.draw('tTgLines',tb=>table(tb,'tg_lines',[['task_id',null,'l'],['title',null,'l'],['tag'],['business_unit',null,'l'],['object_code',null,'l'],['person',null,'l'],['status_now',null,'l'],['last_change',null,'l'],['hands_on_h','h'],['waiting_h','h'],['scheduled_h','h']],['task_id','person']));
+
+const dayTxt=s=>{const d=parseDay(s);return d?d3.timeFormat('%-d %b %Y')(d):'—';};
+dash.draw('tg_from_txt',el=>{const a=dash.data('tag_time'),c=dash.data('tag_catalog');el.textContent=a.status==='ok'&&c.status==='ok'?dayTxt(period(c.data,a.data).from):'—';});
+dash.draw('tg_to_txt',el=>{const a=dash.data('tag_time'),c=dash.data('tag_catalog');el.textContent=a.status==='ok'&&c.status==='ok'?dayTxt(period(c.data,a.data).to):'—';});
+
+function trend(el,field,unit,yFmt){const s=dash.data('tg_trend');
+  if(s.status!=='ok'){el.replaceChildren();const p=document.createElement('p');p.className=s.status==='error'?'vr-err':'';p.textContent=s.status==='error'?'This chart could not load.':'—';el.appendChild(p);return;}
+  loadColors();const rows=s.data.filter(r=>r[field]>0).map(r=>({x:r.x,category:r.group,n:r[field]}));
+  if(!rows.length){el.replaceChildren();const p=document.createElement('p');p.textContent='Nothing in this period with these filters.';el.appendChild(p);return;}
+  const cats=Object.values(GNAME).filter(g=>rows.some(r=>r.category===g));
+  const kind=dash.params().tg_bucket||'week';
+  V.stacked(el,rows,{cats,colorOf:groupColor,xLabel:x=>{const d=parseDay(x);return d?d3.timeFormat(kind==='month'?'%b %Y':'%-d %b')(d):x;},yFmt,unit});}
+dash.draw('tg_trend_hours',el=>trend(el,'hours',' h',d3.format(',.0f')));
+dash.draw('tg_trend_done',el=>trend(el,'done',' tasks',d3.format(',')));
+
+dash.draw('tg_tag_opts',sel=>{const c=dash.data('tag_catalog');const g=dash.params().tg_group||'';
+  const opts=(c.status==='ok'?c.data:[]).filter(r=>!g||r.group===g).sort((a,b)=>a.order-b.order).map(r=>new Option(r.tag+' · BU '+r.business_unit,r.tag));
+  sel.replaceChildren(new Option('All tags',''),...opts);sel.value=dash.params().tg_tag||'';});
+dash.draw('tg_person_opts',sel=>{const a=dash.data('tag_time');const all=dash.params().scope==='all';
+  const names=Array.from(new Set((a.status==='ok'?a.data:[]).filter(r=>(all||!r.is_test)&&r.tag!=='Untagged').map(r=>r.person))).sort(d3.ascending);
+  sel.replaceChildren(new Option('All employees',''),...names.map(n=>new Option(n,n)));sel.value=dash.params().tg_person||'';});
+
+// ---------- controls: listen, set allowed attributes only ----------
+const q=s=>document.querySelectorAll(s);
+q('#tgGroup').forEach(s=>s.addEventListener('change',()=>setP({tg_group:s.value||null,tg_tag:null})));
+q('#tgTag').forEach(s=>s.addEventListener('change',()=>setP({tg_tag:s.value||null})));
+q('#tgPerson').forEach(s=>s.addEventListener('change',()=>setP({tg_person:s.value||null})));
+q('#tgReset').forEach(b=>b.addEventListener('click',()=>setP({tg_group:null,tg_tag:null,tg_person:null})));
+q('#tgBucket button').forEach(b=>b.addEventListener('click',()=>setP({tg_bucket:b.dataset.b})));
+q('.tg-date').forEach(inp=>{
+  inp.addEventListener('change',()=>{if(inp.value&&inp.validity.valid)setP({[inp.id==='tgFrom'?'tg_from':'tg_to']:inp.value});});
+  inp.addEventListener('blur',()=>syncDates(true));});
+q('#tgQuick button').forEach(b=>b.addEventListener('click',()=>{
+  const a=dash.data('tag_time'),c=dash.data('tag_catalog');if(a.status!=='ok'||c.status!=='ok')return;
+  const pr=period(c.data,a.data);const end=parseDay(pr.asOfDay);let f,t=end;const k=b.dataset.q;
+  if(k==='all'){setP({tg_from:null,tg_to:null});return;}
+  if(k==='7'||k==='14'){f=new Date(end.getFullYear(),end.getMonth(),end.getDate()-(+k-1));}
+  else if(k==='month'){f=new Date(end.getFullYear(),end.getMonth(),1);}
+  else {f=new Date(end.getFullYear(),end.getMonth()-1,1);t=new Date(end.getFullYear(),end.getMonth(),0);}
+  setP({tg_from:ymd(f),tg_to:ymd(t)});}));
+function syncDates(force){const a=dash.data('tag_time'),c=dash.data('tag_catalog');if(a.status!=='ok'||c.status!=='ok')return;
+  const pr=period(c.data,a.data);
+  q('#tgFrom').forEach(i=>{if(force||document.activeElement!==i)i.value=pr.from;});
+  q('#tgTo').forEach(i=>{if(force||document.activeElement!==i)i.value=pr.to;});}
+dash.onData(()=>{syncDates(false);const p=dash.params();
+  q('#tgBucket button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.b===(p.tg_bucket||'week'))));
+  q('#tgGroup').forEach(s=>{if(document.activeElement!==s)s.value=p.tg_group||'';});});
+
+// Export every line of the period with its business unit and object code.
+q('#tgExport').forEach(b=>b.addEventListener('click',async()=>{
+  const s=dash.data('tg_lines');const msgEl=q('#tgExportMsg');if(s.status!=='ok')return;
+  const a=dash.data('tag_time'),c=dash.data('tag_catalog');const pr=period(c.data,a.data);
+  const cols=['task_id','title','tag','business_unit','object_code','person','status_now','last_change','completed','will_not_do','hands_on_h','waiting_h','scheduled_h','open_h','assigned_h','accepted_h','on_route_h','in_progress_h','other_h'];
+  const cell=v=>{const t=v==null?'':String(v);return /[",\n]/.test(t)?'"'+t.replace(/"/g,'""')+'"':t;};
+  const csv=[cols.join(','),...s.data.map(r=>cols.map(k=>cell(r[k])).join(','))].join('\n');
+  let ok=true;
+  try{const dl=await claude.use('downloads');if(!dl)ok=false;else await dl.save({filename:'vaughan-task-tags_'+pr.from+'_to_'+pr.to+'.csv',data:csv});}
+  catch(e){ok=!!(e&&e.code==='declined');}
+  msgEl.forEach(m=>{m.hidden=ok;});}));
+})();
+</script>
+
+</body></html>
