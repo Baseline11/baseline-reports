@@ -80,6 +80,20 @@ body{margin:0;background:var(--color-bg);color:var(--color-fg);font-family:var(-
 .vr-table tr.tg-click{cursor:pointer}
 .vr-table tr.tg-click:hover td{background:var(--color-bg)}
 .tg-status{color:var(--color-bad);font-size:13px;margin:0 0 var(--cds-gap-md)}
+.tg-pick{position:relative}
+.tg-pick-btn{font:inherit;display:flex;align-items:center;gap:8px;min-width:230px;min-height:36px;padding:7px 32px 7px 10px;border:1px solid var(--color-border-line);border-radius:8px;background:var(--color-panel);color:var(--color-fg);cursor:pointer;text-align:left;position:relative}
+.tg-pick-btn::after{content:"";position:absolute;right:13px;top:50%;width:6px;height:6px;border-right:2px solid var(--color-fg-muted);border-bottom:2px solid var(--color-fg-muted);transform:translateY(-75%) rotate(45deg)}
+.tg-pick-btn:focus-visible,.tg-pick-list li:focus-visible{outline:3px solid var(--cds-chart-reference);outline-offset:1px}
+.tg-pick-txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tg-pick-list{position:absolute;z-index:30;top:calc(100% + 4px);left:0;min-width:100%;max-height:360px;overflow:auto;margin:0;padding:4px;list-style:none;background:var(--cds-surface-popover,var(--color-panel));border:1px solid var(--color-border-line);border-radius:10px;box-shadow:var(--cds-shadow-popover,0 6px 24px rgba(0,0,0,.15))}
+.tg-pick-list li{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;cursor:pointer;white-space:nowrap;font-size:13px}
+.tg-pick-list li[tabindex]:hover,.tg-pick-list li[aria-selected="true"]{background:var(--color-bg)}
+.tg-pick-list li[aria-selected="true"]{font-weight:700}
+.tg-pick-list li.hdr{cursor:default;font-size:11px;font-weight:800;color:var(--color-fg-muted);text-transform:uppercase;letter-spacing:.04em;padding:10px 10px 4px}
+.tg-pick-list .bu{margin-left:auto;color:var(--color-fg-muted);font-size:12px;padding-left:14px;font-weight:400}
+.tg-ring{display:inline-block;width:10px;height:10px;border-radius:50%;flex:none;box-sizing:border-box}
+.vr-table td .tg-ring{margin-right:6px;vertical-align:-1px}
+.vr-table tr.tg-grp td{font-weight:800;background:var(--color-bg);padding-top:10px}
 @media print{.vr-ctl,.vr-tabs{display:none}.vr-tab{break-before:page}.vr-card{break-inside:avoid}}
 
 .vr-tab{display:block}
@@ -109,12 +123,14 @@ body{margin:0;background:var(--color-bg);color:var(--color-fg);font-family:var(-
       </div></div>
   </div>
   <div class="vr-ctl tg-ctl" id="tgFilters">
-    <div><label for="tgGroup">Group</label>
-      <select class="dash-select" id="tgGroup"><option value="">All groups</option><option value="WIN">C.WIN Winter Operations</option><option value="RDS">C.RDS Road Surface &amp; Drainage</option><option value="CLN">C.CLN Roadside &amp; Cleanliness</option><option value="STY">C.STY Structures &amp; Safety</option><option value="FLT">C.FLT Fleet &amp; Yard</option><option value="SUP">C.SUP Supervision &amp; Support</option></select></div>
-    <div><label for="tgTag">Tag</label><select class="dash-select" id="tgTag" data-draw="tg_tag_opts" data-source="tag_catalog"></select></div>
+    <div><span class="vr-lab" id="tgGroupLab">Group</span>
+      <div class="tg-pick" id="tgGroupPick"><button type="button" class="tg-pick-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="tgGroupLab" data-draw="tg_group_btn" data-source="tag_catalog">—</button><ul class="tg-pick-list" role="listbox" aria-labelledby="tgGroupLab" data-draw="tg_group_list" data-source="tag_catalog" hidden></ul></div></div>
+    <div><span class="vr-lab" id="tgTagLab">Tag</span>
+      <div class="tg-pick" id="tgTagPick"><button type="button" class="tg-pick-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="tgTagLab" data-draw="tg_tag_btn" data-source="tag_catalog">—</button><ul class="tg-pick-list" role="listbox" aria-labelledby="tgTagLab" data-draw="tg_tag_list" data-source="tag_catalog" hidden></ul></div></div>
     <div><label for="tgPerson">Employee</label><select class="dash-select" id="tgPerson" data-draw="tg_person_opts" data-source="tag_time"></select></div>
     <div><span class="vr-lab">&nbsp;</span><button type="button" class="tg-btn" id="tgReset">Clear filters</button></div>
     <div><span class="vr-lab">&nbsp;</span><button type="button" class="tg-btn" id="tgExport">Export lines (CSV)</button></div>
+    <div><span class="vr-lab">&nbsp;</span><button type="button" class="tg-btn" id="tgLegendLink">Tag legend</button></div>
   </div>
   <p class="tg-status" id="tgExportMsg" hidden>The export could not be saved here. You can still download the rows from Sources.</p>
 
@@ -173,6 +189,16 @@ body{margin:0;background:var(--color-bg);color:var(--color-fg);font-family:var(-
         <tbody data-draw="tTgLines"></tbody>
       </table></div></div>
     <p class="vr-find" id="fTags">In this period, <span data-draw="num" data-source="tg_kpi" data-field="untagged" data-row="0">—</span> active tasks have no tag. Tasks created from now on need a tag picked in Citycare to show up here; the existing ones were tagged by Baseline from their title, type and route on 26 November 2026.</p>
+  </section>
+
+  <section class="vr-sec" id="sec-taglegend">
+    <h2>Tag legend</h2>
+    <p class="vr-note">All 30 tags by group, each with its colour, the City task it stands for, its business unit and its object code. Tasks tagged counts every task carrying the tag, all dates, tests left out.</p>
+    <div class="vr-card vr-scroll">
+      <table class="vr-table tg-legend" id="tTagLegend" data-source="tg_legend" data-row-key="tag">
+        <thead><tr><th data-field="tag">Tag</th><th data-field="task_name" class="l">City task</th><th data-field="business_unit" class="l">Business unit</th><th data-field="object_code" class="l">Object code</th><th data-field="tasks">Tasks tagged</th></tr></thead>
+        <tbody data-draw="tTagLegend"></tbody>
+      </table></div>
   </section>
 
   <details class="vr-details" id="tgMethod">
@@ -347,6 +373,10 @@ fn:(seg,tasks,cat)=>{const tk=new Map(tasks.map(t=>[t.task_id,t]));const meta=ne
       completed:rows.some(r=>r.event&&r.status==='Completed')?1:0,will_not_do:rows.some(r=>r.event&&r.status==='Will not do')?1:0});}));
   return out.sort((a,b)=>d3.descending(a.last_change,b.last_change)||d3.ascending(a.task_id,b.task_id));}});
 
+dash.calc('tg_legend',{inputs:['tag_catalog','tag_tasks'],title:'Tag legend',description:'All 30 tags with group, colour, City task, business unit, object code and how many tasks carry each.',
+fn:(cat,tasks)=>{const n=d3.rollup(tasks.filter(t=>!t.is_test),v=>v.length,t=>t.tag);
+  return cat.slice().sort((a,b)=>a.order-b.order).map(c=>({tag:c.tag,group:c.group,group_name:c.group_name,color:c.color,task_name:c.task_name||'',business_unit:c.business_unit,object_code:c.object_code,tasks:n.get(c.tag)||0}));}});
+
 function bucketStart(ms,kind){const d=new Date(ms);
   if(kind==='month')return new Date(d.getFullYear(),d.getMonth(),1).getTime();
   const mon=new Date(d.getFullYear(),d.getMonth(),d.getDate()-((d.getDay()+6)%7));
@@ -400,17 +430,54 @@ function trend(el,field,unit,yFmt){const s=dash.data('tg_trend');
 dash.draw('tg_trend_hours',el=>trend(el,'hours',' h',d3.format(',.0f')));
 dash.draw('tg_trend_done',el=>trend(el,'done',' tasks',d3.format(',')));
 
-dash.draw('tg_tag_opts',sel=>{const c=dash.data('tag_catalog');const g=dash.params().tg_group||'';
-  const opts=(c.status==='ok'?c.data:[]).filter(r=>!g||r.group===g).sort((a,b)=>a.order-b.order).map(r=>new Option(r.tag+' · BU '+r.business_unit,r.tag));
-  sel.replaceChildren(new Option('All tags',''),...opts);sel.value=dash.params().tg_tag||'';});
 dash.draw('tg_person_opts',sel=>{const a=dash.data('tag_time');const all=dash.params().scope==='all';
   const names=Array.from(new Set((a.status==='ok'?a.data:[]).filter(r=>(all||!r.is_test)&&r.tag!=='Untagged').map(r=>r.person))).sort(d3.ascending);
   sel.replaceChildren(new Option('All employees',''),...names.map(n=>new Option(n,n)));sel.value=dash.params().tg_person||'';});
 
-// ---------- controls: listen, set allowed attributes only ----------
+
+// ---------- coloured pickers for group and tag ----------
 const q=s=>document.querySelectorAll(s);
-q('#tgGroup').forEach(s=>s.addEventListener('change',()=>setP({tg_group:s.value||null,tg_tag:null})));
-q('#tgTag').forEach(s=>s.addEventListener('change',()=>setP({tg_tag:s.value||null})));
+const GSHORT={WIN:'Winter Operations',RDS:'Road Surface & Drainage',CLN:'Roadside & Cleanliness',STY:'Structures & Safety',FLT:'Fleet & Yard',SUP:'Supervision & Support'};
+const GORD=['WIN','RDS','CLN','STY','FLT','SUP'];
+const dotEl=c=>{const s=document.createElement('span');s.className='tg-ring';s.style.background=c||'transparent';if(!c)s.style.border='1px dashed var(--color-fg-muted)';return s;};
+const txt=(cls,v)=>{const s=document.createElement('span');if(cls)s.className=cls;s.textContent=v;return s;};
+const gColor=(cat,g)=>{const r=cat.find(x=>x.group===g);return r?r.color:null;};
+function closeAll(except){q('.tg-pick').forEach(p=>{if(p===except)return;p.querySelectorAll('.tg-pick-list').forEach(l=>{l.hidden=true;});p.querySelectorAll('.tg-pick-btn').forEach(b=>b.setAttribute('aria-expanded','false'));});}
+q('.tg-pick').forEach(p=>{p.querySelectorAll('.tg-pick-btn').forEach(b=>b.addEventListener('click',()=>{const l=p.querySelector('.tg-pick-list');if(!l)return;const open=l.hidden;closeAll(p);l.hidden=!open;b.setAttribute('aria-expanded',String(open));if(open){const f=l.querySelector('li[aria-selected="true"]')||l.querySelector('li[tabindex]');if(f)f.focus();}}));});
+document.addEventListener('click',e=>{if(!e.target.closest||!e.target.closest('.tg-pick'))closeAll(null);});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAll(null);});
+function pickItem(ul,{label,color,meta,selected,onPick,header}){const li=document.createElement('li');
+  if(header){li.className='hdr';li.setAttribute('role','presentation');li.append(dotEl(color),txt('',label));ul.appendChild(li);return;}
+  li.setAttribute('role','option');li.tabIndex=0;li.setAttribute('aria-selected',String(!!selected));li.append(dotEl(color),txt('',label));if(meta)li.appendChild(txt('bu',meta));
+  const go=()=>{onPick();closeAll(null);};li.addEventListener('click',e=>{e.stopPropagation();go();});
+  li.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}else if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();const all=[...ul.querySelectorAll('li[tabindex]')];const i=all.indexOf(li)+(e.key==='ArrowDown'?1:-1);if(all[i])all[i].focus();}});
+  ul.appendChild(li);}
+function btnFace(b,color,label){b.replaceChildren(dotEl(color),txt('tg-pick-txt',label));}
+dash.draw('tg_group_btn',b=>{const c=dash.data('tag_catalog');const g=dash.params().tg_group||'';
+  if(c.status!=='ok'){b.textContent='—';return;}btnFace(b,g?gColor(c.data,g):null,g?'C.'+g+' '+GSHORT[g]:'All groups');});
+dash.draw('tg_group_list',ul=>{ul.replaceChildren();const c=dash.data('tag_catalog');if(c.status!=='ok')return;const g=dash.params().tg_group||'';
+  pickItem(ul,{label:'All groups',color:null,selected:!g,onPick:()=>setP({tg_group:null,tg_tag:null})});
+  GORD.forEach(k=>pickItem(ul,{label:'C.'+k+' '+GSHORT[k],color:gColor(c.data,k),meta:c.data.filter(r=>r.group===k).length+' tags',selected:g===k,onPick:()=>setP({tg_group:k,tg_tag:null})}));});
+dash.draw('tg_tag_btn',b=>{const c=dash.data('tag_catalog');const t=dash.params().tg_tag||'';
+  if(c.status!=='ok'){b.textContent='—';return;}const r=c.data.find(x=>x.tag===t);btnFace(b,r?r.color:null,r?r.tag:'All tags');});
+dash.draw('tg_tag_list',ul=>{ul.replaceChildren();const c=dash.data('tag_catalog');if(c.status!=='ok')return;const p=dash.params();const g=p.tg_group||'',t=p.tg_tag||'';
+  pickItem(ul,{label:'All tags',color:null,selected:!t,onPick:()=>setP({tg_tag:null})});
+  GORD.filter(k=>!g||k===g).forEach(k=>{const rows=c.data.filter(r=>r.group===k).sort((a,b)=>a.order-b.order);if(!rows.length)return;
+    pickItem(ul,{header:true,label:'C.'+k+' '+GSHORT[k],color:gColor(c.data,k)});
+    rows.forEach(r=>pickItem(ul,{label:r.tag,color:r.color,meta:'BU '+r.business_unit,selected:t===r.tag,onPick:()=>setP({tg_tag:r.tag})}));});});
+
+// ---------- tag legend ----------
+dash.draw('tTagLegend',tb=>{tb.replaceChildren();const s=dash.data('tg_legend');
+  if(s.status!=='ok'){const tr=tb.insertRow();const td=tr.insertCell();td.colSpan=5;td.className='l'+(s.status==='error'?' vr-err':'');td.textContent=s.status==='error'?'This table could not load.':'—';return;}
+  let last=null;s.data.forEach(r=>{
+    if(r.group!==last){last=r.group;const h=tb.insertRow();h.className='tg-grp';const td=h.insertCell();td.colSpan=5;td.className='l';td.append(dotEl(r.color),txt('','C.'+r.group+' '+r.group_name));}
+    const tr=tb.insertRow();tr.dataset.key=enc(r.tag);tr.classList.add('tg-click');tr.tabIndex=0;
+    const pick=()=>setP({tg_group:r.group,tg_tag:r.tag});tr.addEventListener('click',pick);tr.addEventListener('keydown',e=>{if(e.key==='Enter')pick();});
+    const a=tr.insertCell();a.className='l';a.append(dotEl(r.color),txt('',r.tag));
+    [['task_name','l'],['business_unit','l'],['object_code','l'],['tasks','']].forEach(([f,cl])=>{const td=tr.insertCell();td.textContent=f==='tasks'?d3.format(',')(r[f]):r[f];if(cl)td.className=cl;});});});
+
+// ---------- controls: listen, set allowed attributes only ----------
+q('#tgLegendLink').forEach(b=>b.addEventListener('click',()=>{const el=document.getElementById('sec-taglegend');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}));
 q('#tgPerson').forEach(s=>s.addEventListener('change',()=>setP({tg_person:s.value||null})));
 q('#tgReset').forEach(b=>b.addEventListener('click',()=>setP({tg_group:null,tg_tag:null,tg_person:null})));
 q('#tgBucket button').forEach(b=>b.addEventListener('click',()=>setP({tg_bucket:b.dataset.b})));
@@ -430,8 +497,7 @@ function syncDates(force){const a=dash.data('tag_time'),c=dash.data('tag_catalog
   q('#tgFrom').forEach(i=>{if(force||document.activeElement!==i)i.value=pr.from;});
   q('#tgTo').forEach(i=>{if(force||document.activeElement!==i)i.value=pr.to;});}
 dash.onData(()=>{syncDates(false);const p=dash.params();
-  q('#tgBucket button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.b===(p.tg_bucket||'week'))));
-  q('#tgGroup').forEach(s=>{if(document.activeElement!==s)s.value=p.tg_group||'';});});
+  q('#tgBucket button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.b===(p.tg_bucket||'week'))));});
 
 // Export every line of the period with its business unit and object code.
 q('#tgExport').forEach(b=>b.addEventListener('click',async()=>{
