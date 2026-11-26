@@ -94,6 +94,21 @@ body{margin:0;background:var(--color-bg);color:var(--color-fg);font-family:var(-
 .tg-ring{display:inline-block;width:10px;height:10px;border-radius:50%;flex:none;box-sizing:border-box}
 .vr-table td .tg-ring{margin-right:6px;vertical-align:-1px}
 .vr-table tr.tg-grp td{font-weight:800;background:var(--color-bg);padding-top:10px}
+.tg-metric{margin:0 0 var(--cds-gap-md)}
+.tg-donut{display:flex;flex-wrap:wrap;gap:var(--cds-gap-lg);align-items:center;min-height:270px}
+.tg-donut-wrap{flex:none}
+.tg-donut svg path{transition:opacity .15s}
+.tg-donut .tg-donut-num{font-size:24px;font-weight:800;fill:var(--color-fg)}
+.tg-donut .tg-donut-lab{font-size:12px;fill:var(--color-fg-muted)}
+.tg-donut-leg{list-style:none;margin:0;padding:0;flex:1 1 220px;min-width:0;max-height:260px;overflow:auto;font-size:13px}
+.tg-donut-leg li{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:6px;cursor:pointer}
+.tg-donut-leg li:hover,.tg-donut-leg li.on{background:var(--color-bg)}
+.tg-donut-leg li.on{font-weight:700}
+.tg-donut-leg li:focus-visible{outline:3px solid var(--cds-chart-reference);outline-offset:1px}
+.tg-dl-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tg-dl-val{font-variant-numeric:tabular-nums}
+.tg-dl-pct{color:var(--color-fg-muted);width:3.2em;text-align:right;font-variant-numeric:tabular-nums}
+.tg-tip-h{display:block;font-weight:700}
 @media print{.vr-ctl,.vr-tabs{display:none}.vr-tab{break-before:page}.vr-card{break-inside:avoid}}
 
 .vr-tab{display:block}
@@ -143,6 +158,18 @@ body{margin:0;background:var(--color-bg);color:var(--color-fg);font-family:var(-
     <div class="vr-kpi"><b data-draw="num" data-source="tg_kpi" data-field="waiting_h" data-row="0" data-fmt="h">—</b><span>Waiting hours (open to accepted, paused, blocked)</span></div>
     <div class="vr-kpi"><b data-draw="num" data-source="tg_kpi" data-field="people" data-row="0">—</b><span>Employees with tagged work</span></div>
   </div>
+
+  <section class="vr-sec" id="sec-tagdonut">
+    <h2>Share of work by group and tag</h2>
+    <p class="vr-note">For the chosen period and employee. Click a group to see only its tags in the second chart, and click again to see every tag. Click a tag to filter the whole page to it.</p>
+    <div class="vr-seg tg-metric" role="group" aria-label="Measure" id="tgMetric">
+      <button type="button" data-m="tasks" aria-pressed="true">Tasks</button><button type="button" data-m="hands" aria-pressed="false">Hands-on hours</button><button type="button" data-m="waiting" aria-pressed="false">Waiting hours</button>
+    </div>
+    <div class="vr-grid">
+      <div class="vr-card"><h3>By group</h3><div class="vr-chart tg-donut" id="chDonutGroup" data-source="tg_donut_group" data-draw="tg_donut_group" aria-label="Share by tag group"></div></div>
+      <div class="vr-card"><h3 data-draw="tg_donut_tag_title">By tag</h3><div class="vr-chart tg-donut" id="chDonutTag" data-source="tg_donut_tag" data-draw="tg_donut_tag" aria-label="Share by tag"></div></div>
+    </div>
+  </section>
 
   <section class="vr-sec" id="sec-tagstatus">
     <h2>Time in each status, by tag</h2>
@@ -377,6 +404,29 @@ dash.calc('tg_legend',{inputs:['tag_catalog','tag_tasks'],title:'Tag legend',des
 fn:(cat,tasks)=>{const n=d3.rollup(tasks.filter(t=>!t.is_test),v=>v.length,t=>t.tag);
   return cat.slice().sort((a,b)=>a.order-b.order).map(c=>({tag:c.tag,group:c.group,group_name:c.group_name,color:c.color,task_name:c.task_name||'',business_unit:c.business_unit,object_code:c.object_code,tasks:n.get(c.tag)||0}));}});
 
+// Same as tg_seg but without the group and tag filters, so the donuts can show every group and drill into one.
+dash.calc('tg_seg_all',{inputs:['tag_time','tag_catalog'],title:'Status time inside the period, all groups',
+description:'Each stretch of time a task spent in one status, cut to the chosen dates and employee, every group and tag.',
+fn:(time,cat)=>{
+  const p=dash.params(), all=p.scope==='all', pr=period(cat,time), who=p.tg_person||'';const out=[];
+  time.forEach(r=>{if(r.is_test&&!all)return;if(who&&r.person!==who)return;if(r.tag==='Untagged')return;
+    const f=new Date(r.from).getTime(), t=r.to?new Date(r.to).getTime():pr.asOf;
+    if(r.hours===0){if(f>=pr.P0&&f<pr.P1)out.push({task_id:r.task_id,tag:r.tag,group:r.group,status:r.status,hours:0,event:1});return;}
+    const a=Math.max(f,pr.P0), b=Math.min(t,pr.P1);if(b>a)out.push({task_id:r.task_id,tag:r.tag,group:r.group,status:r.status,hours:(b-a)/36e5,event:0});});
+  return out;}});
+const shareRow=rows=>({tasks:new Set(rows.map(r=>r.task_id)).size,hands_on_h:r1(sumBy(rows,HANDS)),waiting_h:r1(sumBy(rows,WAIT))});
+dash.calc('tg_donut_group',{inputs:['tg_seg_all','tag_catalog'],title:'Share by tag group',description:'Tasks, hands-on and waiting hours per tag group inside the period.',
+fn:(seg,cat)=>{const col=new Map();cat.forEach(c=>{if(!col.has(c.group))col.set(c.group,c.color);});const name=new Map(cat.map(c=>[c.group,c.group_name]));
+  return ['WIN','RDS','CLN','STY','FLT','SUP'].map(g=>({group:g,group_name:'C.'+g+' '+(name.get(g)||g),color:col.get(g)||'#999',...shareRow(seg.filter(r=>r.group===g))}));}});
+dash.calc('tg_donut_tag',{inputs:['tg_seg_all','tag_catalog'],title:'Share by tag',description:'Tasks, hands-on and waiting hours per tag inside the period, for the chosen group or all groups.',
+fn:(seg,cat)=>{const g=dash.params().tg_group||'';
+  const used=new Set(seg.map(r=>r.tag));const rows=cat.filter(c=>(!g||c.group===g)&&used.has(c.tag)).sort((a,b)=>a.order-b.order);
+  // Tags of one group share its colour, so each gets its own shade here: darker to lighter in group order.
+  const n=d3.rollup(rows,v=>v.length,c=>c.group);const k=new Map();
+  return rows.map(c=>{const i=k.get(c.group)||0;k.set(c.group,i+1);const cnt=n.get(c.group);const h=d3.hsl(c.color);
+    h.l=Math.max(0.22,Math.min(0.8,h.l+(cnt>1?(i/(cnt-1))*0.38-0.14:0)));
+    return {tag:c.tag,group:c.group,color:h.formatHex(),business_unit:c.business_unit,...shareRow(seg.filter(r=>r.tag===c.tag))};});}});
+
 function bucketStart(ms,kind){const d=new Date(ms);
   if(kind==='month')return new Date(d.getFullYear(),d.getMonth(),1).getTime();
   const mon=new Date(d.getFullYear(),d.getMonth(),d.getDate()-((d.getDay()+6)%7));
@@ -466,6 +516,41 @@ dash.draw('tg_tag_list',ul=>{ul.replaceChildren();const c=dash.data('tag_catalog
     pickItem(ul,{header:true,label:'C.'+k+' '+GSHORT[k],color:gColor(c.data,k)});
     rows.forEach(r=>pickItem(ul,{label:r.tag,color:r.color,meta:'BU '+r.business_unit,selected:t===r.tag,onPick:()=>setP({tg_tag:r.tag})}));});});
 
+// ---------- donuts ----------
+const MET={tasks:['tasks','tasks',d3.format(',')],hands:['hands_on_h','h hands-on',d3.format(',.1f')],waiting:['waiting_h','h waiting',d3.format(',.1f')]};
+function donut(el,rows,{keyOf,labelOf,selected,onPick,center}){
+  el.replaceChildren();const m=MET[dash.params().tg_metric||'tasks'];const vals=rows.map(r=>({r,v:+r[m[0]]||0})).filter(d=>d.v>0);
+  const total=d3.sum(vals,d=>d.v);
+  if(!total){const p=document.createElement('p');p.textContent='Nothing in this period with these filters.';el.appendChild(p);return;}
+  const W=el.clientWidth||320,D=Math.max(160,Math.min(250,W-20)),R=D/2,ir=R*0.6;
+  const wrap=document.createElement('div');wrap.className='tg-donut-wrap';el.appendChild(wrap);
+  const svg=d3.select(wrap).append('svg').attr('viewBox',`0 0 ${D} ${D}`).attr('width',D).attr('height',D).attr('role','img').attr('aria-label',el.getAttribute('aria-label')||'Donut chart');
+  const g=svg.append('g').attr('transform',`translate(${R},${R})`);
+  const arc=d3.arc().innerRadius(ir).outerRadius(R-4).padAngle(0.012).cornerRadius(3);const arcH=d3.arc().innerRadius(ir).outerRadius(R);
+  const tip=document.createElement('div');tip.className='vr-tip';tip.hidden=true;el.appendChild(tip);
+  const pct=v=>d3.format('.0%')(v/total);
+  g.selectAll('path').data(d3.pie().sort(null).value(d=>d.v)(vals)).join('path')
+    .attr('d',d=>(selected&&keyOf(d.data.r)===selected)?arcH(d):arc(d)).style('fill',d=>d.data.r.color).style('cursor','pointer')
+    .style('opacity',d=>selected&&keyOf(d.data.r)!==selected?0.35:1)
+    .on('pointermove',(ev,d)=>{tip.replaceChildren(txt('tg-tip-h',labelOf(d.data.r)),txt('',m[2](d.data.v)+' '+m[1]+' · '+pct(d.data.v)));tip.hidden=false;
+      const b=el.getBoundingClientRect();let x=ev.clientX-b.left+12;if(x+tip.offsetWidth>b.width)x=ev.clientX-b.left-tip.offsetWidth-12;tip.style.left=Math.max(0,x)+'px';tip.style.top=(ev.clientY-b.top+12)+'px';})
+    .on('pointerleave',()=>{tip.hidden=true;}).on('click',(ev,d)=>onPick(d.data.r));
+  const c=center();g.append('text').attr('text-anchor','middle').attr('dy','-0.1em').attr('class','tg-donut-num').text(m[2](c.value));
+  g.append('text').attr('text-anchor','middle').attr('dy','1.4em').attr('class','tg-donut-lab').text(c.label);
+  const ul=document.createElement('ul');ul.className='tg-donut-leg';
+  vals.sort((a,b)=>b.v-a.v).forEach(d=>{const li=document.createElement('li');li.tabIndex=0;if(selected&&keyOf(d.r)===selected)li.className='on';
+    li.append(dotEl(d.r.color),txt('tg-dl-name',labelOf(d.r)),txt('tg-dl-val',m[2](d.v)),txt('tg-dl-pct',pct(d.v)));
+    li.addEventListener('click',()=>onPick(d.r));li.addEventListener('keydown',e=>{if(e.key==='Enter')onPick(d.r);});ul.appendChild(li);});
+  el.appendChild(ul);}
+const dmsg=(el,s)=>{el.replaceChildren();const p=document.createElement('p');p.className=s.status==='error'?'vr-err':'';p.textContent=s.status==='error'?'This chart could not load.':'—';el.appendChild(p);};
+dash.draw('tg_donut_group',el=>{const s=dash.data('tg_donut_group');if(s.status!=='ok')return dmsg(el,s);const g=dash.params().tg_group||'';const m=MET[dash.params().tg_metric||'tasks'];
+  donut(el,s.data,{keyOf:r=>r.group,labelOf:r=>r.group_name,selected:g,onPick:r=>setP({tg_group:g===r.group?null:r.group,tg_tag:null}),
+    center:()=>g?{value:(s.data.find(r=>r.group===g)||{})[m[0]]||0,label:'C.'+g}:{value:d3.sum(s.data,r=>+r[m[0]]||0),label:'All groups'}});});
+dash.draw('tg_donut_tag',el=>{const s=dash.data('tg_donut_tag');if(s.status!=='ok')return dmsg(el,s);const t=dash.params().tg_tag||'';const m=MET[dash.params().tg_metric||'tasks'];
+  donut(el,s.data,{keyOf:r=>r.tag,labelOf:r=>r.tag+' · BU '+r.business_unit,selected:t,onPick:r=>setP({tg_group:r.group,tg_tag:t===r.tag?null:r.tag}),
+    center:()=>t?{value:(s.data.find(r=>r.tag===t)||{})[m[0]]||0,label:t}:{value:d3.sum(s.data,r=>+r[m[0]]||0),label:dash.params().tg_group?'C.'+dash.params().tg_group+' tags':'All tags'}});});
+dash.draw('tg_donut_tag_title',h=>{const g=dash.params().tg_group||'';h.textContent=g?'Tags in C.'+g+' '+GSHORT[g]:'By tag, all groups';});
+
 // ---------- tag legend ----------
 dash.draw('tTagLegend',tb=>{tb.replaceChildren();const s=dash.data('tg_legend');
   if(s.status!=='ok'){const tr=tb.insertRow();const td=tr.insertCell();td.colSpan=5;td.className='l'+(s.status==='error'?' vr-err':'');td.textContent=s.status==='error'?'This table could not load.':'—';return;}
@@ -481,6 +566,7 @@ q('#tgLegendLink').forEach(b=>b.addEventListener('click',()=>{const el=document.
 q('#tgPerson').forEach(s=>s.addEventListener('change',()=>setP({tg_person:s.value||null})));
 q('#tgReset').forEach(b=>b.addEventListener('click',()=>setP({tg_group:null,tg_tag:null,tg_person:null})));
 q('#tgBucket button').forEach(b=>b.addEventListener('click',()=>setP({tg_bucket:b.dataset.b})));
+q('#tgMetric button').forEach(b=>b.addEventListener('click',()=>setP({tg_metric:b.dataset.m})));
 q('.tg-date').forEach(inp=>{
   inp.addEventListener('change',()=>{if(inp.value&&inp.validity.valid)setP({[inp.id==='tgFrom'?'tg_from':'tg_to']:inp.value});});
   inp.addEventListener('blur',()=>syncDates(true));});
@@ -497,7 +583,8 @@ function syncDates(force){const a=dash.data('tag_time'),c=dash.data('tag_catalog
   q('#tgFrom').forEach(i=>{if(force||document.activeElement!==i)i.value=pr.from;});
   q('#tgTo').forEach(i=>{if(force||document.activeElement!==i)i.value=pr.to;});}
 dash.onData(()=>{syncDates(false);const p=dash.params();
-  q('#tgBucket button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.b===(p.tg_bucket||'week'))));});
+  q('#tgBucket button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.b===(p.tg_bucket||'week'))));
+  q('#tgMetric button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.m===(p.tg_metric||'tasks'))));});
 
 // Export every line of the period with its business unit and object code.
 q('#tgExport').forEach(b=>b.addEventListener('click',async()=>{
