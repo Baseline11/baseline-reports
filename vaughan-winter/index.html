@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow"><title>Vaughan Winter Scenarios</title>
+<style>body{margin:0;font:600 15px system-ui,sans-serif;background:#f4f6f9;color:#16202c;display:flex;align-items:center;justify-content:center;height:100vh}
+@media (prefers-color-scheme:dark){body{background:#0f1620;color:#e8edf3}}#msg{max-width:520px;padding:24px;text-align:center}</style></head>
+<body><div id="msg">Opening the report…</div>
+<script>
+(async function(){
+  const SK='vaughan-winter:k', msg=document.getElementById('msg');
+  const h=new URLSearchParams(location.hash.slice(1)); let k=h.get('k');
+  try{ if(k) sessionStorage.setItem(SK,k); else k=sessionStorage.getItem(SK); }catch(e){}
+  if(!k||!/^[A-Za-z0-9_-]{43}$/.test(k)){ msg.textContent='This report needs the full link, including the part after #. Ask Baseline for the link.'; return; }
+  h.delete('k'); history.replaceState(null,'',location.pathname+location.search+(h.toString()?'#'+h.toString():''));
+  try{
+    const b64u=s=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')+'==='.slice((s.length+3)%4)),c=>c.charCodeAt(0));
+    const buf=new Uint8Array(await (await fetch('data.bin',{cache:'no-store'})).arrayBuffer());
+    const key=await crypto.subtle.importKey('raw',b64u(k),'AES-GCM',false,['decrypt']);
+    const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:buf.slice(0,12)},key,buf.slice(12));
+    const html=await new Response(new Blob([plain]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+    document.open(); document.write(html); document.close();
+  }catch(e){ try{sessionStorage.removeItem(SK);}catch(_){} msg.textContent='This link could not open the report. Check that you copied the whole link.'; }
+})();
+</script></body></html>
